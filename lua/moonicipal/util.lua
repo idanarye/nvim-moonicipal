@@ -1,5 +1,18 @@
 M = {}
 
+function M.defer_to_coroutine(dlg, ...)
+    local args = {...}
+    local co = coroutine.create(function()
+        xpcall(dlg, function(error)
+            local traceback = debug.traceback(error, 2)
+            traceback = string.gsub(traceback, '\t', string.rep(' ', 8))
+            vim.api.nvim_err_writeln(traceback)
+        end, unpack)
+    end)
+    coroutine.resume(co)
+    return co
+end
+
 function M.resume_with(callback)
     local co = coroutine.running()
     local did_yield = false

@@ -1,4 +1,7 @@
+local util = require'moonicipal/util'
+
 local M = {}
+
 
 local P = {}
 function M.populator()
@@ -30,16 +33,24 @@ function M.load(path)
     })
 end
 
-function T:invoke(task_name)
-    local task = self.tasks[task_name]
-    local co = coroutine.create(function()
-        xpcall(task.run, function(error)
-            local traceback = debug.traceback(error, 2)
-            traceback = string.gsub(traceback, '\t', string.rep(' ', 8))
-            vim.api.nvim_err_writeln(traceback)
-        end)
+function T:invoke(...)
+    local args = {...}
+    util.defer_to_coroutine(function()
+        local task_name = args[1]
+        if not task_name then
+            task_name = util.resume_with(function(resumer)
+                vim.ui.select(vim.tbl_keys(self.tasks), {
+                    prompt = 'Choose task to run: ';
+                }, resumer)
+            end)
+            if not task_name then
+                return
+            end
+            util.fix_echo()
+        end
+        local task = self.tasks[task_name]
+        task.run()
     end)
-    coroutine.resume(co)
 end
 
 return M
