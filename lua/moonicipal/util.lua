@@ -40,6 +40,7 @@ function M.fix_echo()
         vim.api.nvim_feedkeys(keycmd, 'n', false)
     end)
     coroutine.yield()
+    vim.cmd[[echon]]  -- clear the command line
 end
 
 return M
