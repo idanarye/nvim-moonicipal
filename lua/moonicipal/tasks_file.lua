@@ -27,7 +27,13 @@ end
 
 function T:invoke(task_name)
     local task = self.tasks[task_name]
-    local co = coroutine.create(task.run)
+    local co = coroutine.create(function()
+        xpcall(task.run, function(error)
+            local traceback = debug.traceback(error, 2)
+            traceback = string.gsub(traceback, '\t', string.rep(' ', 8))
+            vim.api.nvim_err_writeln(traceback)
+        end)
+    end)
     coroutine.resume(co)
 end
 
