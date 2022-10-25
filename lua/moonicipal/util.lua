@@ -35,12 +35,26 @@ end
 function M.fix_echo()
     local co = coroutine.running()
     table.insert(resumable_threads, co)
-    local keycmd = ':lua require"moonicipal/util"._resume_all_threads()\n'
     vim.schedule(function()
-        vim.api.nvim_feedkeys(keycmd, 'n', false)
+        local keycmd = ':lua require"moonicipal/util"._resume_all_threads()\n'
+        local mode = vim.fn.mode()
+        local prefix = ''
+        if mode == 'i' then
+            prefix = '<C-o>'
+        elseif mode == 'j' then
+            prefix = '<C-u>'
+        end
+        prefix = vim.api.nvim_replace_termcodes(prefix, true, false, true)
+        vim.api.nvim_feedkeys(prefix .. keycmd, 'n', false)
     end)
     coroutine.yield()
     vim.cmd[[echon]]  -- clear the command line
+end
+
+function M.sleep(timeout)
+    M.resume_with(function(resumer)
+        vim.defer_fn(resumer, timeout)
+    end)
 end
 
 return M

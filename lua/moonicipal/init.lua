@@ -17,6 +17,7 @@ function M.read_task_file()
     return tasks_file.load(M.settings.file_prefix .. '.moonicipal.lua')
 end
 
+M.sleep = util.sleep
 M.fix_echo = util.fix_echo
 
 function M.input(opts)
