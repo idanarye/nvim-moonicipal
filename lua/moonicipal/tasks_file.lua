@@ -6,7 +6,12 @@ function M.populator()
 end
 
 function P:__newindex(task_name, task_def)
-    if type(task_def) == 'table' then
+    if type(task_def) == 'function' then
+        M.current[task_name] = {
+            name = task_name;
+            run = task_def;
+        }
+    elseif type(task_def) == 'table' then
         if task_def.name == nil then
             task_def.name = task_name
             M.current[task_name] = task_def

@@ -11,14 +11,25 @@ function M.setup(config)
     end
 end
 
-M.tasks_file = tasks_file.populator
+function M.tasks_file()
+    return tasks_file.populator()
+end
+
+function M.invoke(task_name)
+    M.read_task_file():invoke(task_name)
+end
 
 function M.read_task_file()
     return tasks_file.load(M.settings.file_prefix .. '.moonicipal.lua')
 end
 
-M.sleep = util.sleep
-M.fix_echo = util.fix_echo
+function M.sleep(timeout)
+    util.sleep(timeout)
+end
+
+function M.fix_echo()
+    util.fix_echo()
+end
 
 function M.input(opts)
     return util.resume_with(function(resumer)
