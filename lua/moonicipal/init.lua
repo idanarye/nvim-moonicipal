@@ -17,6 +17,8 @@ function M.read_task_file()
     return tasks_file.load(M.settings.file_prefix .. '.moonicipal.lua')
 end
 
+M.fix_echo = util.fix_echo
+
 function M.input(opts)
     return util.resume_with(function(resumer)
         vim.ui.input(opts, resumer)

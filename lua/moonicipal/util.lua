@@ -20,4 +20,26 @@ function M.resume_with(callback)
     end
 end
 
+local resumable_threads = {}
+
+function M._resume_all_threads()
+    while true do
+        local thread = table.remove(resumable_threads)
+        if not thread then
+            return
+        end
+        coroutine.resume(thread)
+    end
+end
+
+function M.fix_echo()
+    local co = coroutine.running()
+    table.insert(resumable_threads, co)
+    local keycmd = ':lua require"moonicipal/util"._resume_all_threads()\n'
+    vim.schedule(function()
+        vim.api.nvim_feedkeys(keycmd, 'n', false)
+    end)
+    coroutine.yield()
+end
+
 return M
