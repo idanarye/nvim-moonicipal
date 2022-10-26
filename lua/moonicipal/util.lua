@@ -45,19 +45,29 @@ function M._resume_all_threads()
     end
 end
 
+local ECHO_PREFIXES_BY_MODE = {
+    n = ':';
+    i = '<C-o>:';
+    v = ':<C-u>';
+    s = '<C-o>:<C-u>';
+    t = '<C-\\><C-o>:';
+    -- TODO:
+    -- R =
+    -- c =
+    -- r =
+    -- ! =
+}
+ECHO_PREFIXES_BY_MODE[vim.api.nvim_replace_termcodes('<C-v>', true, false, true)] = ECHO_PREFIXES_BY_MODE.v
+ECHO_PREFIXES_BY_MODE[vim.api.nvim_replace_termcodes('<C-s>', true, false, true)] = ECHO_PREFIXES_BY_MODE.s
+
 function M.fix_echo()
     local co = coroutine.running()
     table.insert(resumable_threads, co)
     vim.schedule(function()
-        local keycmd = ':lua require"moonicipal/util"._resume_all_threads()\n'
-        local mode = vim.fn.mode()
-        local prefix = ''
-        if mode == 'i' then
-            prefix = '<C-o>'
-        elseif mode == 'j' then
-            prefix = '<C-u>'
-        end
-        prefix = vim.api.nvim_replace_termcodes(prefix, true, false, true)
+        local prefix = vim.api.nvim_replace_termcodes(
+            ECHO_PREFIXES_BY_MODE[vim.fn.mode():lower()],
+            true, false, true)
+        local keycmd = 'lua require"moonicipal/util"._resume_all_threads()\n'
         vim.api.nvim_feedkeys(prefix .. keycmd, 'n', false)
     end)
     coroutine.yield()
