@@ -1,6 +1,7 @@
 local util = require'moonicipal/util'
 local RegularTask =require'moonicipal/regular_task'
 local execution_context = require('moonicipal/execution_context')
+local cache = require('moonicipal/cache')
 
 local M = {}
 
@@ -75,6 +76,7 @@ function T:invoke(task_name, ...)
     local task_args = {...}
     util.defer_to_coroutine(function()
         local context = execution_context(self)
+        cache.cycle(self)
         context.main_task = task
         task.task_type:run(context, task, task_args)
     end)
