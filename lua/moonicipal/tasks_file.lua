@@ -1,8 +1,8 @@
 local util = require'moonicipal/util'
 local RegularTask =require'moonicipal/regular_task'
+local execution_context = require('moonicipal/execution_context')
 
 local M = {}
-
 
 local P = {}
 function M.populator()
@@ -62,14 +62,20 @@ function T:select_and_invoke()
     end)
 end
 
-function T:invoke(task_name, ...)
+function T:get_task(task_name)
     local task = self.tasks[task_name]
     if task == nil then
         error('No such task ' .. vim.inspect(task_name))
     end
+    return task
+end
+
+function T:invoke(task_name, ...)
+    local task = self:get_task(task_name)
     local task_args = {...}
     util.defer_to_coroutine(function()
-        local context = {}
+        local context = execution_context(self)
+        context.main_task = task
         task.task_type:run(context, task, task_args)
     end)
 end
