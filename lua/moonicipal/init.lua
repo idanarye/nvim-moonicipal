@@ -21,7 +21,11 @@ function M.setup(config)
     end
 
     vim.api.nvim_create_user_command('MC', function(ctx)
-        M.invoke(unpack(ctx.fargs))
+        if ctx.fargs[1] == nil then
+            M.read_task_file():select_and_invoke()
+        else
+            M.read_task_file():invoke(unpack(ctx.fargs))
+        end
     end, { nargs = '*', complete = cmd_complete })
 
     -- These are all temporary. Will be replaced with more proper solution
@@ -43,8 +47,12 @@ function M.tasks_file()
     return tasks_file.populator()
 end
 
-function M.invoke(...)
-    M.read_task_file():invoke(...)
+function M.select_and_invoke()
+    M.read_task_file():select_and_invoke()
+end
+
+function M.invoke(task_name, ...)
+    M.read_task_file():invoke(task_name, ...)
 end
 
 function M.read_task_file()

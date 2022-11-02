@@ -47,24 +47,29 @@ function M.load(path)
     })
 end
 
-function T:invoke(...)
-    local args = {...}
+function T:select_and_invoke()
+    util.defer_to_coroutine(function()
+        local task_name = util.resume_with(function(resumer)
+            vim.ui.select(vim.tbl_keys(self.tasks), {
+                prompt = 'Choose task to run: ';
+            }, resumer)
+        end)
+        if not task_name then
+            return
+        end
+        util.fix_echo()
+        self:invoke(task_name)
+    end)
+end
+
+function T:invoke(task_name, ...)
+    local task = self.tasks[task_name]
+    if task == nil then
+        error('No such task ' .. vim.inspect(task_name))
+    end
+    local task_args = {...}
     util.defer_to_coroutine(function()
         local context = {}
-        local task_name = args[1]
-        local task_args = {select(2, unpack(args))}
-        if not task_name then
-            task_name = util.resume_with(function(resumer)
-                vim.ui.select(vim.tbl_keys(self.tasks), {
-                    prompt = 'Choose task to run: ';
-                }, resumer)
-            end)
-            if not task_name then
-                return
-            end
-            util.fix_echo()
-        end
-        local task = self.tasks[task_name]
         task.task_type:run(context, task, task_args)
     end)
 end
