@@ -45,28 +45,40 @@ function M._resume_all_threads()
     end
 end
 
-local ECHO_PREFIXES_BY_MODE = {
-    n = ':';
-    i = '<C-o>:';
-    v = ':<C-u>';
-    s = '<C-o>:<C-u>';
-    t = '<C-\\><C-o>:';
+local CTRL_V = vim.api.nvim_replace_termcodes('<C-v>', true, false, true)
+local CTRL_S = vim.api.nvim_replace_termcodes('<C-s>', true, false, true)
+
+local function get_keybind_prefix_for_running_command()
+    local mode = vim.fn.mode()
+    if mode == 'n' then
+        return ':'
+    elseif mode == 'i' then
+        return '<C-o>:'
+    elseif mode == 'v' or mode == 'V' or mode == CTRL_V then
+        return ':<C-u>'
+    elseif mode == 's' or mode == 'S' or mode == CTRL_S then
+        return '<C-o>:<C-u>'
+    elseif mode == 't' then
+        local buf_nr = vim.api.nvim_buf_get_number(0)
+        for _, chan in ipairs(vim.api.nvim_list_chans()) do
+            if chan.buffer == buf_nr then
+                return '<C-\\><C-o>:'
+            end
+        end
+        return ':'
     -- TODO:
-    -- R =
-    -- c =
-    -- r =
-    -- ! =
-}
-ECHO_PREFIXES_BY_MODE[vim.api.nvim_replace_termcodes('<C-v>', true, false, true)] = ECHO_PREFIXES_BY_MODE.v
-ECHO_PREFIXES_BY_MODE[vim.api.nvim_replace_termcodes('<C-s>', true, false, true)] = ECHO_PREFIXES_BY_MODE.s
+    -- elseif mode == 'R' then
+    -- elseif mode == 'c' then
+    -- elseif mode == 'r' then
+    end
+    error('Cannot fix echo from mode ' .. vim.inspect(mode))
+end
 
 function M.fix_echo()
     local co = coroutine.running()
     table.insert(resumable_threads, co)
     vim.schedule(function()
-        local prefix = vim.api.nvim_replace_termcodes(
-            ECHO_PREFIXES_BY_MODE[vim.fn.mode():lower()],
-            true, false, true)
+        local prefix = vim.api.nvim_replace_termcodes(get_keybind_prefix_for_running_command(), true, false, true)
         local keycmd = 'lua require"moonicipal/util"._resume_all_threads()\n'
         vim.api.nvim_feedkeys(prefix .. keycmd, 'n', false)
     end)
