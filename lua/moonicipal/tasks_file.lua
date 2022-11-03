@@ -82,34 +82,6 @@ function T:invoke(task_name, ...)
     end)
 end
 
-local RESERVED_WORDS = {
-    ['and'] = true,
-    ['break'] = true,
-    ['do'] = true,
-    ['else'] = true,
-    ['elseif'] = true,
-    ['end'] = true,
-    ['false'] = true,
-    ['for'] = true,
-    ['function'] = true,
-    ['if'] = true,
-    ['in'] = true,
-    ['local'] = true,
-    ['nil'] = true,
-    ['not'] = true,
-    ['or'] = true,
-    ['repeat'] = true,
-    ['return'] = true,
-    ['then'] = true,
-    ['true'] = true,
-    ['until'] = true,
-    ['while'] = true,
-}
-
-local function is_illegal_identifier(str)
-    return RESERVED_WORDS[str] or string.match(str, [[^[%a_][%w_]*$]]) == nil
-end
-
 function M.open_for_edit(edit_cmd, file_name, task_name)
     vim.cmd(edit_cmd .. ' ' .. file_name)
     if (vim.api.nvim_buf_line_count(0) == 1
@@ -126,7 +98,7 @@ function M.open_for_edit(edit_cmd, file_name, task_name)
         local task = M.load(file_name).tasks[task_name]
         if task == nil then
             local header = 'function T:' .. task_name .. '()'
-            if is_illegal_identifier(task_name) then
+            if loadstring(header .. '\nend') == nil then
                 header = 'T[' .. vim.inspect(task_name) .. '] = function(self)'
             end
             vim.api.nvim_buf_set_lines(0, -1, -1, true, {
