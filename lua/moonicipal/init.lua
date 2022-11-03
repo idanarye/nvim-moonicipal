@@ -29,18 +29,15 @@ function M.setup(config)
     end, { nargs = '*', complete = cmd_complete })
 
     -- These are all temporary. Will be replaced with more proper solution
-    vim.api.nvim_create_user_command('MCedit', function()
-        vim.cmd('edit ' .. get_file_name())
-    end, {})
-    vim.api.nvim_create_user_command('MCsedit', function()
-        vim.cmd('split ' .. get_file_name())
-    end, {})
-    vim.api.nvim_create_user_command('MCvedit', function()
-        vim.cmd('vsplit ' .. get_file_name())
-    end, {})
-    vim.api.nvim_create_user_command('MCtedit', function()
-        vim.cmd('tabnew ' .. get_file_name())
-    end, {})
+    local function define_edit_function(cmd_name, edit_cmd)
+        vim.api.nvim_create_user_command(cmd_name, function(ctx)
+            tasks_file.open_for_edit(edit_cmd, get_file_name(), unpack(ctx.fargs))
+        end, { nargs = '?', complete = cmd_complete })
+    end
+    define_edit_function('MCedit', 'edit')
+    define_edit_function('MCsedit', 'split')
+    define_edit_function('MCvedit', 'vsplit')
+    define_edit_function('MCtedit', 'tabnew')
 end
 
 function M.tasks_file()

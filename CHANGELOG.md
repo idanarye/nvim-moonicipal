@@ -10,3 +10,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Task running commands with completion.
 - Tasks dependencies with data passing.
 - Caching mechanism.
+- Helpers for creating task files and tasks.

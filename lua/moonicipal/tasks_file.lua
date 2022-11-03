@@ -82,4 +82,72 @@ function T:invoke(task_name, ...)
     end)
 end
 
+local RESERVED_WORDS = {
+    ['and'] = true,
+    ['break'] = true,
+    ['do'] = true,
+    ['else'] = true,
+    ['elseif'] = true,
+    ['end'] = true,
+    ['false'] = true,
+    ['for'] = true,
+    ['function'] = true,
+    ['if'] = true,
+    ['in'] = true,
+    ['local'] = true,
+    ['nil'] = true,
+    ['not'] = true,
+    ['or'] = true,
+    ['repeat'] = true,
+    ['return'] = true,
+    ['then'] = true,
+    ['true'] = true,
+    ['until'] = true,
+    ['while'] = true,
+}
+
+local function is_illegal_identifier(str)
+    return RESERVED_WORDS[str] or string.match(str, [[^[%a_][%w_]*$]]) == nil
+end
+
+function M.open_for_edit(edit_cmd, file_name, task_name)
+    vim.cmd(edit_cmd .. ' ' .. file_name)
+    if (vim.api.nvim_buf_line_count(0) == 1
+        and vim.fn.filereadable(file_name) == 0
+        and vim.api.nvim_buf_get_lines(0, 0, 1, true)[1] == ""
+        ) then
+        vim.api.nvim_buf_set_lines(0, 0, 1, true, {
+            [[local moonicipal = require'moonicipal']],
+            [[local T = moonicipal.tasks_file()]],
+        })
+    end
+
+    if task_name ~= nil then
+        local task = M.load(file_name).tasks[task_name]
+        if task == nil then
+            local header = 'function T:' .. task_name .. '()'
+            if is_illegal_identifier(task_name) then
+                header = 'T[' .. vim.inspect(task_name) .. '] = function(self)'
+            end
+            vim.api.nvim_buf_set_lines(0, -1, -1, true, {
+                '',
+                header,
+                '    ',
+                'end',
+            })
+            local last_line = vim.api.nvim_buf_line_count(0)
+            vim.api.nvim_win_set_cursor(0, {last_line, 0})
+            vim.api.nvim_win_set_cursor(0, {last_line - 1, 0})
+            vim.cmd[[startinsert!]]
+        else
+            if type(task.run) == 'function' then
+                local task_info = debug.getinfo(task.run)
+                -- Go to last line then first, to ensure they are all (or at least most) visible.
+                vim.api.nvim_win_set_cursor(0, {task_info.lastlinedefined, 0})
+                vim.api.nvim_win_set_cursor(0, {task_info.linedefined, 0})
+            end
+        end
+    end
+end
+
 return M
