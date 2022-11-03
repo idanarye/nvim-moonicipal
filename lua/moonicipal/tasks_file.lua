@@ -5,6 +5,7 @@ local cache = require('moonicipal/cache')
 
 local M = {}
 
+---@class Populator
 local P = {}
 function M.populator()
     return setmetatable({}, P)

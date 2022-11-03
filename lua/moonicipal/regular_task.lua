@@ -2,8 +2,13 @@ local cache = require('moonicipal/cache')
 
 local RegularTask = setmetatable({}, require'moonicipal/task_type_meta')
 
+---@class RegularTask
+---@field cache any Data that will be there on the new run - unless the `cache_still_valid` function returns false
+---@field cache_still_valid fun(): boolean Determines whether or not to keep the cahce
+local RegularTaskMethods = {}
+
 local RegularTaskMeta = {
-    methods = {};
+    methods = RegularTaskMethods;
     getters = {};
     setters = {};
 }
@@ -52,11 +57,18 @@ function RegularTask:run(context, task_def, args)
     context.invoked_tasks_results[task_def] = result
 end
 
-function RegularTaskMeta.methods:dep(...)
-    return self.context:dep(...)
+-- Run another task if it hasn't been run before this execution
+---@param task_name string The task to invoke
+---@return any #the result of the invoked task
+function RegularTaskMethods:dep(task_name)
+    return self.context:dep(task_name)
 end
 
-function RegularTaskMeta.methods:is_main()
+--- Check if this is the entry task of the current execution
+---@return
+---| true # if this task was invoked directly from a user command
+---| false # if this task was invoked as a dependency of another task
+function RegularTaskMethods:is_main()
     return self.context.main_task == self.task_def
 end
 

@@ -1,7 +1,8 @@
-local M = {}
+---@module 'moonicipal/util'
+local M = vim.deep_copy(require'moonicipal/util')
+-- local M = require'moonicipal/util'
 
 local tasks_file = require'moonicipal/tasks_file'
-local util = require'moonicipal/util'
 
 M.settings = require'moonicipal/settings'
 
@@ -40,6 +41,7 @@ function M.setup(config)
     define_edit_function('MCtedit', 'tabnew')
 end
 
+---@return Populator | RegularTask
 function M.tasks_file()
     return tasks_file.populator()
 end
@@ -56,22 +58,14 @@ function M.read_task_file()
     return tasks_file.load(get_file_name())
 end
 
-function M.sleep(timeout)
-    util.sleep(timeout)
-end
-
-function M.fix_echo()
-    util.fix_echo()
-end
-
 function M.input(opts)
-    return util.resume_with(function(resumer)
+    return M.resume_with(function(resumer)
         vim.ui.input(opts, resumer)
     end)
 end
 
 function M.select(options, opts)
-    return util.resume_with(function(resumer)
+    return M.resume_with(function(resumer)
         vim.ui.select(options, opts, resumer)
     end)
 end
