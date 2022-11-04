@@ -1,6 +1,4 @@
----@module 'moonicipal/util'
-local M = vim.deep_copy(require'moonicipal/util')
--- local M = require'moonicipal/util'
+local M = setmetatable({}, {__index = require'moonicipal/util'})
 
 local tasks_file = require'moonicipal/tasks_file'
 
