@@ -1,49 +1,37 @@
 local util = require'moonicipal/util'
-local RegularTask =require'moonicipal/regular_task'
 local execution_context = require('moonicipal/execution_context')
-local cache = require('moonicipal/cache')
 
 local M = {}
 
 ---@class Populator
 local P = {}
 function M.populator()
-    return setmetatable({}, P)
+    if type(M.tasks) ~= 'table' then
+        error('populator called not from tasks file')
+    end
+    return setmetatable({tasks = M.tasks}, P)
 end
 
-function P:__call(prepare)
-    vim.validate {
-        prepare = {prepare, 'table'};
-    }
-    rawset(self, 'prepare', prepare)
-end
-
-function P:__index()
-    error('Cannot get stuff from the tasks file populator')
+function P:__index(task_name)
+    return rawget(self, 'tasks')[task_name]
 end
 
 function P:__newindex(task_name, task_def)
     vim.validate {
-        prepare = {task_def, 'function'};
+        {task_def, 'function'};
     }
-    if type(task_def) == 'function' then
-        local prepare = rawget(self, 'prepare') or {}
-        rawset(self, 'prepare', nil)
-        if not prepare.task_type then
-            prepare.task_type = RegularTask
-        end
-        prepare.name = task_name
-        prepare.run = task_def
-        M.current[task_name] = prepare
-    end
+    rawget(self, 'tasks')[task_name] = {
+        name = task_name,
+        run = task_def,
+    }
 end
 
 local T = {}
 function M.load(path)
     local tasks = {}
-    M.current = tasks
+    M.tasks = tasks
     loadfile(path)()
-    M.current = nil
+    M.tasks = nil
     return vim.tbl_extend('error', T, {
         tasks = tasks;
     })
@@ -65,6 +53,10 @@ function T:select_and_invoke()
 end
 
 function T:get_task(task_name)
+    --TODO: check that it's really a task, and not just any table?
+    if type(task_name) == 'table' then
+        return task_name
+    end
     local task = self.tasks[task_name]
     if task == nil then
         error('No such task ' .. vim.inspect(task_name))
@@ -72,14 +64,12 @@ function T:get_task(task_name)
     return task
 end
 
-function T:invoke(task_name, ...)
-    local task = self:get_task(task_name)
-    local task_args = {...}
+function T:invoke(task)
+    task = self:get_task(task)
     util.defer_to_coroutine(function()
         local context = execution_context(self)
-        cache.cycle(self)
         context.main_task = task
-        task.task_type:run(context, task, task_args)
+        context:run(task)
     end)
 end
 
