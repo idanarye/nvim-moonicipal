@@ -30,7 +30,7 @@ local T = {}
 function M.load(path)
     local tasks = {}
     M.tasks = tasks
-    loadfile(path)()
+    dofile(path)
     M.tasks = nil
     return vim.tbl_extend('error', T, {
         tasks = tasks;
