@@ -64,7 +64,7 @@ end
 
 function M.select(options, opts)
     return M.resume_with(function(resumer)
-        vim.ui.select(options, opts, resumer)
+        vim.ui.select(options, opts or {}, resumer)
     end)
 end
 
