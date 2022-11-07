@@ -75,10 +75,8 @@ end
 
 function M.open_for_edit(edit_cmd, file_name, task_name)
     vim.cmd(edit_cmd .. ' ' .. file_name)
-    if (vim.api.nvim_buf_line_count(0) == 1
-        and vim.fn.filereadable(file_name) == 0
-        and vim.api.nvim_buf_get_lines(0, 0, 1, true)[1] == ""
-        ) then
+    local is_brand_new = vim.api.nvim_buf_line_count(0) == 1 and vim.fn.filereadable(file_name) == 0 and vim.api.nvim_buf_get_lines(0, 0, 1, true)[1] == ""
+    if is_brand_new then
         vim.api.nvim_buf_set_lines(0, 0, 1, true, {
             [[local moonicipal = require'moonicipal']],
             [[local T = moonicipal.tasks_file()]],
@@ -86,7 +84,10 @@ function M.open_for_edit(edit_cmd, file_name, task_name)
     end
 
     if task_name ~= nil then
-        local task = M.load(file_name).tasks[task_name]
+        local task = nil
+        if not is_brand_new then
+            task = M.load(file_name).tasks[task_name]
+        end
         if task == nil then
             local header = 'function T:' .. task_name .. '()'
             if loadstring(header .. '\nend') == nil then
