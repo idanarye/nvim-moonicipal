@@ -20,24 +20,24 @@ function TaskClass:is_main()
     return self.context.main_task == self.task_def
 end
 
---Use a cached result when the task is called as a dependency
+-- Use a cached result when the task is called as a dependency
 --
---When the task is invoked as a main task, the function passed as argument will
---always be called.
+-- When the task is invoked as a main task, the function passed as argument will
+-- always be called.
 --
---When the task is invoked as a dependency, the function will only be called if
---the cache is empty. Otherwise, the cached result will be restored instead.
+-- When the task is invoked as a dependency, the function will only be called if
+-- the cache is empty. Otherwise, the cached result will be restored instead.
 --
---Note that the cache is task-bound - using this method multiple times in the
---same task will use the same cache, even if the passed functions are
---different.
+-- Note that the cache is task-bound - using this method multiple times in the
+-- same task will use the same cache, even if the passed functions are
+-- different.
 --
 --    function T:dependency()
 --        return self:cache_result(function()
 --            return moonicipal.input { prompt = "Enter text: " }
 --        end)
 --    end
---    
+--
 --    function T:use()
 --        local dependency_result = self:dep(T.dependency)
 --        print('You have selected', vim.inspect(dependency_result))
