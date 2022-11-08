@@ -60,8 +60,12 @@ end
 -- Create a buffer, and use the result only if the buffer is still open in the
 -- current tab.
 --
--- See `cache_result` for other notes about the cache. The buffer used for the
--- caching is the buffer Vim ends up in when the passed function returns.
+-- The buffer used for the caching is the buffer Vim ends up in when the passed
+-- function returns, and it must be a different buffer than the one Vim was in
+-- when the function was called. Vim will return to the original window -
+-- unless the function has swiched to a new tab.
+--
+-- See `cache_result` for other notes about the cache.
 --
 --    function T:log_buffer()
 --        return self:cached_buf_in_tab(function()
@@ -93,7 +97,16 @@ function TaskClass:cached_buf_in_tab(dlg, ...)
         end
     end
 
+    local orig_window = vim.fn.win_getid()
+    local orig_buffer = vim.api.nvim_win_get_buf(0)
     local result = {dlg(...)}
+    local new_buffer = vim.api.nvim_win_get_buf(0)
+    assert(orig_buffer ~= new_buffer, 'cached_buf_in_tab function did not create a new buffer')
+    local orig_window_tab = vim.fn.win_id2tabwin(orig_window)[1]
+    local current_tab = vim.fn.tabpagenr()
+    if current_tab == orig_window_tab then
+        vim.fn.win_gotoid(orig_window)
+    end
     vim.b[cache_key] = result
     return unpack(result)
 end
