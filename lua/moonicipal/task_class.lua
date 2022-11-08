@@ -101,7 +101,7 @@ function TaskClass:cached_buf_in_tab(dlg, ...)
     local orig_buffer = vim.api.nvim_win_get_buf(0)
     local result = {dlg(...)}
     local new_buffer = vim.api.nvim_win_get_buf(0)
-    assert(orig_buffer ~= new_buffer, 'cached_buf_in_tab function did not create a new buffer')
+    assert(orig_buffer ~= new_buffer, '`cached_buf_in_tab` function did not create a new buffer')
     local orig_window_tab = vim.fn.win_id2tabwin(orig_window)[1]
     local current_tab = vim.fn.tabpagenr()
     if current_tab == orig_window_tab then
@@ -110,5 +110,109 @@ function TaskClass:cached_buf_in_tab(dlg, ...)
     vim.b[cache_key] = result
     return unpack(result)
 end
+
+---@alias OptionTransformer
+---| string
+---| string[]
+---| fun(value:any):string
+
+---@param transformer OptionTransformer
+local function transformer_as_function(transformer)
+    if type(transformer) == 'string' then
+        return function(item)
+            return item[transformer]
+        end
+    elseif vim.is_callable(transformer) then
+        return transformer
+    elseif vim.tbl_islist(transformer) then
+        return function(item)
+            return vim.tbl_get(item, unpack(transformer --[[@as string[] ]]))
+        end
+    else
+        error('Illegal format ' .. vim.inspect(transformer))
+    end
+end
+
+---@class CachedChoiceConfiguration
+---@field key OptionTransformer Mandatory. How to recognize the cached option.
+---@field format OptionTransformer How to display the option in the selection UI.
+
+---@class CachedChoice: CachedChoiceConfiguration
+---@operator call(number): string
+local CachedChoice = {}
+CachedChoice.__index = CachedChoice
+
+function CachedChoice:__call(option)
+    table.insert(self, option)
+end
+
+-- Let the user choose from several options, and use a cached result when the
+-- task is called as a dependency.
+--
+-- Unlike `cache_result`, with this method the list of options gets computed
+-- even when the cache is used.
+--
+-- Use the object returned by this methoid as a function to register the
+-- options, and then call `:select` on it to let the user choose.
+--
+--    function T:choose_command()
+--        local cc = self:cached_choice {
+--            key = 'name',
+--            format = function(cmd)
+--                return ('%s [%s]'):format(cmd.name, cmd.command)
+--            end,
+--        }
+--        cc {
+--            name = 'Show the time',
+--            command = 'date',
+--        }
+--        cc {
+--            name = 'Check internet connection',
+--            command = 'ping 8.8.8.8',
+--        }
+--        return cc:select()
+--    end
+--
+--    function T:run_command()
+--        local chosen_command = self:dep(T.choose_command)
+--        vim.cmd.new()
+--        vim.cmd['terminal'](chosen_command.command)
+--    end
+--
+---@param cfg? CachedChoiceConfiguration The configuraiton. `key` is mandatory, and `format` is probably needed.
+---@return CachedChoice
+function TaskClass:cached_choice(cfg)
+    if cfg == nil then
+        cfg = {}
+    end
+    cfg.task = self
+    return setmetatable(cfg, CachedChoice) --[[@as CachedChoice]]
+end
+
+--- Let the user choose using `moonicipal.selected`.
+function CachedChoice:select()
+    assert(self.key, '`cached_choice` used without setting a key')
+    local key_fn = transformer_as_function(self.key)
+
+    if not self.task:is_main() then
+        local cached_key = self.task.cache[CachedChoice]
+        if cached_key ~= nil then
+            for _, option in ipairs(self) do
+                if key_fn(option) == cached_key then
+                    return option
+                end
+            end
+        end
+    end
+
+    local options = {}
+    if self.format then
+        options.format_item = transformer_as_function(self.format)
+    end
+    local chosen = require'moonicipal'.select(self, options)
+    self.task.cache[CachedChoice] = key_fn(chosen)
+    return chosen
+end
+
 
 return TaskClass
