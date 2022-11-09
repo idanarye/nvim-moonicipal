@@ -3,6 +3,9 @@ local execution_context = require('moonicipal/execution_context')
 
 local M = {}
 
+---@class Decoration
+---@field alias string | string[] Allow invoking the task by some other name. Will not show in the tasks list.
+
 ---@class Populator
 local P = {}
 function M.populator()
@@ -12,18 +15,50 @@ function M.populator()
     return setmetatable({tasks = M.tasks}, P)
 end
 
+function P:__call(decoration)
+    if rawget(self, 'decoration') then
+        error('Only one decoration allowed per task', 2)
+    end
+    rawset(self, 'decoration', decoration)
+end
+
 function P:__index(task_name)
     return rawget(self, 'tasks')[task_name]
 end
 
-function P:__newindex(task_name, task_def)
+local function as_iterator(value)
+    if value == nil then
+        return function()
+            -- Do nothing - empty iteration
+        end
+    elseif vim.tbl_islist(value) then
+        return ipairs(value)
+    else
+        local need_to_send = true
+        return function()
+            if need_to_send then
+                need_to_send = false
+                return 1, value
+            end
+        end
+    end
+end
+
+function P:__newindex(task_name, task_run_function)
     vim.validate {
-        {task_def, 'function'};
+        {task_run_function, 'function'};
     }
-    rawget(self, 'tasks')[task_name] = {
+    local decoration = rawget(self, 'decoration') or {}
+    rawset(self, 'decoration', nil)
+    local tasks = rawget(self, 'tasks')
+    local task_def = {
         name = task_name,
-        run = task_def,
+        run = task_run_function,
     }
+    tasks[task_name] = task_def
+    for _, alias in as_iterator(decoration.alias) do
+        tasks[alias] = task_def
+    end
 end
 
 local T = {}

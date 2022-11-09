@@ -39,7 +39,7 @@ function M.setup(config)
     define_edit_function('MCtedit', 'tabnew')
 end
 
----@return Populator | TaskClass
+---@return Populator | fun(opts: Decoration) | TaskClass
 function M.tasks_file()
     return tasks_file.populator()
 end
