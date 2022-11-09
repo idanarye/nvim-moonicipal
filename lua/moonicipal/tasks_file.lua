@@ -12,7 +12,10 @@ function M.populator()
     if type(M.tasks) ~= 'table' then
         error('populator called not from tasks file')
     end
-    return setmetatable({tasks = M.tasks}, P)
+    return setmetatable({
+        tasks = M.tasks,
+        task_names_by_order = M.task_names_by_order,
+    }, P)
 end
 
 function P:__call(decoration)
@@ -55,6 +58,7 @@ function P:__newindex(task_name, task_run_function)
         name = task_name,
         run = task_run_function,
     }
+    table.insert(rawget(self, 'task_names_by_order'), task_name)
     tasks[task_name] = task_def
     for _, alias in as_iterator(decoration.alias) do
         tasks[alias] = task_def
@@ -64,18 +68,22 @@ end
 local T = {}
 function M.load(path)
     local tasks = {}
+    local task_names_by_order = {}
     M.tasks = tasks
+    M.task_names_by_order = task_names_by_order
     dofile(path)
     M.tasks = nil
+    M.task_names_by_order = nil
     return vim.tbl_extend('error', T, {
-        tasks = tasks;
+        tasks = tasks,
+        task_names_by_order = task_names_by_order,
     })
 end
 
 function T:select_and_invoke()
     util.defer_to_coroutine(function()
         local task_name = util.resume_with(function(resumer)
-            vim.ui.select(vim.tbl_keys(self.tasks), {
+            vim.ui.select(self.task_names_by_order, {
                 prompt = 'Choose task to run: ';
             }, resumer)
         end)
