@@ -102,12 +102,12 @@ function TaskClass:cached_buf_in_tab(dlg, ...)
     local result = {dlg(...)}
     local new_buffer = vim.api.nvim_win_get_buf(0)
     assert(orig_buffer ~= new_buffer, '`cached_buf_in_tab` function did not create a new buffer')
+    vim.b[cache_key] = result
     local orig_window_tab = vim.fn.win_id2tabwin(orig_window)[1]
     local current_tab = vim.fn.tabpagenr()
     if current_tab == orig_window_tab then
         vim.fn.win_gotoid(orig_window)
     end
-    vim.b[cache_key] = result
     return unpack(result)
 end
 
