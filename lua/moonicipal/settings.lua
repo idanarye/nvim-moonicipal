@@ -3,6 +3,7 @@ local META = {
 
 local DEFAULTS_KEY = {}
 
+---@return MoonicipalSettings
 function META:new(defaults)
     return setmetatable({[DEFAULTS_KEY] = defaults}, self)
 end
@@ -25,6 +26,10 @@ function META:__newindex(name, value)
     rawset(self, name, value)
 end
 
+---@class MoonicipalSettings
+---@field file_prefix? string
+---@field tasks_selection_lru_size? number
 return META:new {
-    file_prefix = '.' .. (os.getenv('USER') or os.getenv('USERNAME'));
+    file_prefix = '.' .. (os.getenv('USER') or os.getenv('USERNAME')),
+    tasks_selection_lru_size = 5,
 }

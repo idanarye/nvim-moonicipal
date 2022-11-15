@@ -9,6 +9,7 @@ local function get_file_name()
     return M.settings.file_prefix .. '.moonicipal.lua'
 end
 
+---@param config MoonicipalSettings
 function M.setup(config)
     for key, value in pairs(config) do
         M.settings[key] = value

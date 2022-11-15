@@ -80,15 +80,33 @@ function M.load(path)
     })
 end
 
+local selection_lru = {}
+
 function T:select_and_invoke()
+    local task_names = vim.fn.copy(self.task_names_by_order)
+    local order = vim.tbl_add_reverse_lookup(vim.fn.copy(selection_lru))
+    task_names = vim.fn.sort(task_names, function(a, b)
+        return (order[b] or 0) - (order[a] or 0)
+    end)
     util.defer_to_coroutine(function()
         local task_name = util.resume_with(function(resumer)
-            vim.ui.select(self.task_names_by_order, {
+            vim.ui.select(task_names, {
                 prompt = 'Choose task to run: ';
             }, resumer)
         end)
         if not task_name then
             return
+        end
+        local old_index = 1 + vim.fn.index(selection_lru, task_name)
+        if 0 < old_index then
+            table.remove(selection_lru, old_index)
+        end
+        table.insert(selection_lru, task_name)
+        local max_length = require'moonicipal/settings'.tasks_selection_lru_size
+        if 0 <= max_length then
+            while max_length < #selection_lru do
+                table.remove(selection_lru, 1)
+            end
         end
         util.fix_echo()
         self:invoke(task_name)
