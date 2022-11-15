@@ -57,15 +57,37 @@ function M.read_task_file()
     return tasks_file.load(get_file_name())
 end
 
+---@class MoonicipalInputOptions
+---@field prompt? string 
+---@field default? string
+
+---@param opts MoonicipalInputOptions
 function M.input(opts)
+    local new_opts = {}
+    if opts then
+        opts.prompt = new_opts.prompt
+        opts.default = new_opts.default
+    end
     return util.resume_with(function(resumer)
-        vim.ui.input(opts, resumer)
+        vim.ui.input(new_opts, resumer)
     end)
 end
 
+---@class MoonicipalSelectOptions
+---@field prompt? string 
+---@field format? MoonicipalOptionTransformer
+
+---@param opts MoonicipalSelectOptions
 function M.select(options, opts)
+    local new_opts = {}
+    if opts then
+        new_opts.prompt = opts.prompt
+        if opts.format then
+            new_opts.format_item = util.transformer_as_function(opts.format)
+        end
+    end
     return util.resume_with(function(resumer)
-        vim.ui.select(options, opts or {}, resumer)
+        vim.ui.select(options, new_opts, resumer)
     end)
 end
 

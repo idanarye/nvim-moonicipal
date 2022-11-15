@@ -185,11 +185,9 @@ function CachedChoice:select()
         end
     end
 
-    local options = {}
-    if self.format then
-        options.format_item = util.transformer_as_function(self.format)
-    end
-    local chosen = require'moonicipal'.select(self, options)
+    local chosen = require'moonicipal'.select(self, {
+        format = self.format,
+    })
     self.task.cache[CachedChoice] = key_fn(chosen)
     return chosen
 end
