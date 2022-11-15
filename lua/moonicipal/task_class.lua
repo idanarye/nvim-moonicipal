@@ -1,3 +1,5 @@
+local util = require'moonicipal/util'
+
 ---@class TaskClass
 ---@field task_def table
 ---@field context table
@@ -111,31 +113,9 @@ function TaskClass:cached_buf_in_tab(dlg, ...)
     return unpack(result)
 end
 
----@alias OptionTransformer
----| string
----| string[]
----| fun(value:any):string
-
----@param transformer OptionTransformer
-local function transformer_as_function(transformer)
-    if type(transformer) == 'string' then
-        return function(item)
-            return item[transformer]
-        end
-    elseif vim.is_callable(transformer) then
-        return transformer
-    elseif vim.tbl_islist(transformer) then
-        return function(item)
-            return vim.tbl_get(item, unpack(transformer --[[@as string[] ]]))
-        end
-    else
-        error('Illegal format ' .. vim.inspect(transformer))
-    end
-end
-
 ---@class CachedChoiceConfiguration
----@field key OptionTransformer Mandatory. How to recognize the cached option.
----@field format OptionTransformer How to display the option in the selection UI.
+---@field key MoonicipalOptionTransformer Mandatory. How to recognize the cached option.
+---@field format MoonicipalOptionTransformer How to display the option in the selection UI.
 
 ---@class CachedChoice: CachedChoiceConfiguration
 ---@operator call(number): string
@@ -192,7 +172,7 @@ end
 --- Let the user choose using `moonicipal.selected`.
 function CachedChoice:select()
     assert(self.key, '`cached_choice` used without setting a key')
-    local key_fn = transformer_as_function(self.key)
+    local key_fn = util.transformer_as_function(self.key)
 
     if not self.task:is_main() then
         local cached_key = self.task.cache[CachedChoice]
@@ -207,7 +187,7 @@ function CachedChoice:select()
 
     local options = {}
     if self.format then
-        options.format_item = transformer_as_function(self.format)
+        options.format_item = util.transformer_as_function(self.format)
     end
     local chosen = require'moonicipal'.select(self, options)
     self.task.cache[CachedChoice] = key_fn(chosen)

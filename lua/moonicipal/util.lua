@@ -7,7 +7,7 @@ function M.defer_to_coroutine(dlg, ...)
             local traceback = debug.traceback(error, 2)
             traceback = string.gsub(traceback, '\t', string.rep(' ', 8))
             vim.api.nvim_err_writeln(traceback)
-        end, unpack)
+        end, unpack(args))
     end)
     coroutine.resume(co)
     return co
@@ -90,6 +90,28 @@ function M.sleep(timeout)
     M.resume_with(function(resumer)
         vim.defer_fn(resumer, timeout)
     end)
+end
+
+---@alias MoonicipalOptionTransformer
+---| string
+---| string[]
+---| fun(value:any):string
+
+---@param transformer MoonicipalOptionTransformer
+function M.transformer_as_function(transformer)
+    if type(transformer) == 'string' then
+        return function(item)
+            return item[transformer]
+        end
+    elseif vim.is_callable(transformer) then
+        return transformer
+    elseif vim.tbl_islist(transformer) then
+        return function(item)
+            return vim.tbl_get(item, unpack(transformer --[[@as string[] ]]))
+        end
+    else
+        error('Illegal format ' .. vim.inspect(transformer))
+    end
 end
 
 return M

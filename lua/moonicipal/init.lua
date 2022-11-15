@@ -1,5 +1,6 @@
-local M = setmetatable({}, {__index = require'moonicipal/util'})
+local M = {}
 
+local util = require'moonicipal/util'
 local tasks_file = require'moonicipal/tasks_file'
 
 M.settings = require'moonicipal/settings'
@@ -57,15 +58,23 @@ function M.read_task_file()
 end
 
 function M.input(opts)
-    return M.resume_with(function(resumer)
+    return util.resume_with(function(resumer)
         vim.ui.input(opts, resumer)
     end)
 end
 
 function M.select(options, opts)
-    return M.resume_with(function(resumer)
+    return util.resume_with(function(resumer)
         vim.ui.select(options, opts or {}, resumer)
     end)
+end
+
+function M.fix_echo()
+    util.fix_echo()
+end
+
+function M.sleep(timeout)
+    util.sleep(timeout)
 end
 
 return M
