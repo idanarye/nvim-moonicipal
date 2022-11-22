@@ -95,7 +95,7 @@ function TaskClass:cached_buf_in_tab(dlg, ...)
         local buf_nr = vim.api.nvim_win_get_buf(win_nr)
         local has_cache, cache = pcall(vim.api.nvim_buf_get_var, buf_nr, cache_key)
         if has_cache then
-            return unpack(cache)
+            return cache()
         end
     end
 
@@ -104,7 +104,9 @@ function TaskClass:cached_buf_in_tab(dlg, ...)
     local result = {dlg(...)}
     local new_buffer = vim.api.nvim_win_get_buf(0)
     assert(orig_buffer ~= new_buffer, '`cached_buf_in_tab` function did not create a new buffer')
-    vim.b[cache_key] = result
+    vim.b[cache_key] = function()
+        return unpack(result)
+    end
     local orig_window_tab = vim.fn.win_id2tabwin(orig_window)[1]
     local current_tab = vim.fn.tabpagenr()
     if current_tab == orig_window_tab then
