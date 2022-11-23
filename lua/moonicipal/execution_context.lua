@@ -2,20 +2,6 @@ local util = require'moonicipal/util'
 
 local M = {}
 
-function M:dep(task)
-    task = self.tasks_file:get_task(task)
-    local existing_result = self.invoked_tasks_results[task]
-    if type(existing_result) == 'table' then
-        return unpack(existing_result)
-    elseif existing_result == true then
-        error('Deadlock when trying to invoke ' .. vim.inspect(task.name) .. ' as dependency')
-    else
-        assert(existing_result == nil)
-        self:run(task)
-        return unpack(self.invoked_tasks_results[task])
-    end
-end
-
 local CACHE = {}
 
 function M:run(task_def)
@@ -37,9 +23,8 @@ function M:run(task_def)
     self.invoked_tasks_results[task_def] = result
 end
 
-return function(tasks_file)
+return function()
     return vim.tbl_extend('error', {
-        tasks_file = tasks_file;
         invoked_tasks_results = {};
     }, M)
 end

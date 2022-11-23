@@ -1,24 +1,16 @@
 local util = require'moonicipal/util'
 
----@class TaskClass
+---@class MoonicipalTaskClassInside
 ---@field task_def table
 ---@field context table
 ---@field cache table Data that will be there on the new run
-local TaskClass = {}
-
--- Run another task if it hasn't been run before this execution.
----@generic T
----@param task fun(self: any): T
----@return T
-function TaskClass:dep(task)
-    return self.context:dep(task)
-end
+local MoonicipalTaskClassInside = {}
 
 --- Check if this is the entry task of the current execution.
 ---@return
 ---| true # if this task was invoked directly from a user command
 ---| false # if this task was invoked as a dependency of another task
-function TaskClass:is_main()
+function MoonicipalTaskClassInside:is_main()
     return self.context.main_task == self.task_def
 end
 
@@ -41,7 +33,7 @@ end
 --    end
 --
 --    function T:use()
---        local dependency_result = self:dep(T.dependency)
+--        local dependency_result = T:dependency()
 --        print('You have selected', vim.inspect(dependency_result))
 --    end
 ---@generic T
@@ -49,13 +41,13 @@ end
 ---@param dlg fun(...: P): T
 ---@param ... P
 ---@return T
-function TaskClass:cache_result(dlg, ...)
-    local cached = self.cache[TaskClass.cache_result]
+function MoonicipalTaskClassInside:cache_result(dlg, ...)
+    local cached = self.cache[MoonicipalTaskClassInside.cache_result]
     if cached ~= nil and not self:is_main() then
         return unpack(cached)
     end
     local new_result = {dlg(...)}
-    self.cache[TaskClass.cache_result] = new_result
+    self.cache[MoonicipalTaskClassInside.cache_result] = new_result
     return unpack(new_result)
 end
 
@@ -81,7 +73,7 @@ end
 --    end
 --
 --    function T:log()
---        local log_buffer = self:dep(T.log_buffer)
+--        local log_buffer = T:log_buffer()
 --        log_buffer(moonicipal.input())
 --    end
 ---@generic T
@@ -89,7 +81,7 @@ end
 ---@param dlg fun(...: P): T
 ---@param ... P
 ---@return T
-function TaskClass:cached_buf_in_tab(dlg, ...)
+function MoonicipalTaskClassInside:cached_buf_in_tab(dlg, ...)
     local cache_key = 'Moonicipal:cached_buf_in_tab:' .. self.task_def.name
     for _, win_nr in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
         local buf_nr = vim.api.nvim_win_get_buf(win_nr)
@@ -156,14 +148,14 @@ end
 --    end
 --
 --    function T:run_command()
---        local chosen_command = self:dep(T.choose_command)
+--        local chosen_command = T:choose_command()
 --        vim.cmd.new()
 --        vim.cmd['terminal'](chosen_command.command)
 --    end
 --
 ---@param cfg? CachedChoiceConfiguration The configuraiton. `key` is mandatory, and `format` is probably needed.
 ---@return CachedChoice
-function TaskClass:cached_choice(cfg)
+function MoonicipalTaskClassInside:cached_choice(cfg)
     if cfg == nil then
         cfg = {}
     end
@@ -195,4 +187,4 @@ function CachedChoice:select()
 end
 
 
-return TaskClass
+return MoonicipalTaskClassInside
