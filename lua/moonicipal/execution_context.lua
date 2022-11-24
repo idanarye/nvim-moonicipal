@@ -13,18 +13,16 @@ function M:run(task_def)
     setmetatable(task_instance, {
         __index = require'moonicipal/task_class',
     })
-    self.invoked_tasks_results[task_def] = true
     local result = {task_def.run(task_instance)}
     local cache = rawget(task_instance, 'cache')
     vim.validate {
         cache = {cache, 'table'}
     }
     CACHE[task_def.name] = cache
-    self.invoked_tasks_results[task_def] = result
+    return unpack(result)
 end
 
 return function()
     return vim.tbl_extend('error', {
-        invoked_tasks_results = {};
     }, M)
 end
