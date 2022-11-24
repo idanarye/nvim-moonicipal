@@ -186,5 +186,71 @@ function CachedChoice:select()
     return chosen
 end
 
+local function run_fn_or_cmd(fn_or_cmd)
+    if vim.is_callable(fn_or_cmd) then
+        fn_or_cmd()
+    else
+        vim.cmd(fn_or_cmd)
+    end
+end
+
+---@class MoonicipalCachedDataCellOptions
+---@field win? function | string Run to create a window for the data cell buffer. Defaults to `botright new`
+---@field buf_init? function | string Run only if the data cell buffer is created
+---@field buf? function | string Run every time to configure the buffer
+---@field default? string | string[] yup
+
+---@param opts MoonicipalCachedDataCellOptions
+---@return string?
+function MoonicipalTaskClassInside:cached_data_cell(opts)
+    local cached_buffer_name = 'Moonicipal:cached_data_cell:' .. self.task_def.name
+
+    local existing_buf_nr = nil
+    if vim.fn.bufexists(cached_buffer_name) == 1 then
+        existing_buf_nr = vim.fn.bufnr(cached_buffer_name)
+    end
+
+    if not self:is_main() then
+        if existing_buf_nr then
+            local lines = vim.api.nvim_buf_get_lines(existing_buf_nr, 0, -1, true)
+            return table.concat(lines, '\n')
+        else
+            return
+        end
+    end
+
+    if existing_buf_nr then
+        local open_in_win = nil
+        for _, win_id in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+            if vim.api.nvim_win_get_buf(win_id) == existing_buf_nr then
+                open_in_win = win_id
+                break
+            end
+        end
+        if open_in_win then
+            vim.fn.win_gotoid(open_in_win)
+        else
+            run_fn_or_cmd(opts.win or 'botright new')
+            vim.cmd.buffer(cached_buffer_name)
+        end
+    else
+        run_fn_or_cmd(opts.win or 'botright new')
+        util.fake_scratch_buffer(cached_buffer_name)
+        if opts.default then
+            local default = opts.default
+            if type(default) == 'string' then
+                default = vim.split(default, '\n')
+            end
+            vim.api.nvim_buf_set_lines(0, 0, -1, true, default)
+        end
+        if opts.buf_init then
+            run_fn_or_cmd(opts.buf_init)
+        end
+    end
+
+    if opts.buf then
+        run_fn_or_cmd(opts.buf)
+    end
+end
 
 return MoonicipalTaskClassInside

@@ -114,4 +114,27 @@ function M.transformer_as_function(transformer)
     end
 end
 
+function M.fake_scratch_buffer(set_buffer_name_to)
+    local already_set_name = vim.api.nvim_buf_get_name(0)
+    if already_set_name ~= '' then
+        error(string.format('Cannot make %s a scratch buffer', vim.inspect(already_set_name)))
+    end
+    if not set_buffer_name_to then
+        set_buffer_name_to = 'Moonicipal:scratch:' .. vim.loop.hrtime()
+    end
+    vim.cmd.file(set_buffer_name_to)
+    vim.o.bufhidden = 'hide'
+    vim.api.nvim_create_autocmd('BufWriteCmd', {
+        buffer = 0,
+        callback = function()
+        end,
+    })
+    vim.api.nvim_create_autocmd('BufModifiedSet', {
+        buffer = 0,
+        callback = function()
+            vim.o.modified = false
+        end,
+    })
+end
+
 return M

@@ -100,4 +100,8 @@ function M.sleep(timeout)
     util.sleep(timeout)
 end
 
+function M.fake_scratch_buffer(set_buffer_name_to)
+    util.fake_scratch_buffer(set_buffer_name_to)
+end
+
 return M

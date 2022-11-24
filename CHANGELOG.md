@@ -11,3 +11,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Helpers for creating task files and tasks.
 - Caching mechanism.
 - Helpers for common caching usecases.
+- Data cells mechanism.
