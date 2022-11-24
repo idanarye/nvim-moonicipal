@@ -236,6 +236,7 @@ function MoonicipalTaskClassInside:cached_data_cell(opts)
     else
         run_fn_or_cmd(opts.win or 'botright new')
         util.fake_scratch_buffer(cached_buffer_name)
+        vim.o.bufhidden = 'hide'
         if opts.default then
             local default = opts.default
             if type(default) == 'string' then

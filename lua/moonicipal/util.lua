@@ -123,7 +123,7 @@ function M.fake_scratch_buffer(set_buffer_name_to)
         set_buffer_name_to = 'Moonicipal:scratch:' .. vim.loop.hrtime()
     end
     vim.cmd.file(set_buffer_name_to)
-    vim.o.bufhidden = 'hide'
+    vim.o.bufhidden = 'wipe'
     vim.api.nvim_create_autocmd('BufWriteCmd', {
         buffer = 0,
         callback = function()
