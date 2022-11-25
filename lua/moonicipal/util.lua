@@ -137,4 +137,15 @@ function M.fake_scratch_buffer(set_buffer_name_to)
     })
 end
 
+function M.get_buf_contents(buf_nr)
+    return table.concat(vim.api.nvim_buf_get_lines(buf_nr, 0, -1, true), '\n')
+end
+
+function M.set_buf_contents(buf_nr, content)
+    if type(content) == 'string' then
+        content = vim.split(content, '\n')
+    end
+    vim.api.nvim_buf_set_lines(buf_nr, 0, -1, true, content)
+end
+
 return M

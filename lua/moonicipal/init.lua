@@ -102,6 +102,15 @@ end
 
 function M.fake_scratch_buffer(set_buffer_name_to)
     util.fake_scratch_buffer(set_buffer_name_to)
+
+end
+
+function M.get_buf_contents(buf_nr)
+    return util.get_buf_contents(buf_nr)
+end
+
+function M.set_buf_contents(buf_nr, content)
+    util.set_buf_contents(buf_nr, content)
 end
 
 return M

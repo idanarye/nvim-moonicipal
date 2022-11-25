@@ -238,11 +238,7 @@ function MoonicipalTaskClassInside:cached_data_cell(opts)
         util.fake_scratch_buffer(cached_buffer_name)
         vim.o.bufhidden = 'hide'
         if opts.default then
-            local default = opts.default
-            if type(default) == 'string' then
-                default = vim.split(default, '\n')
-            end
-            vim.api.nvim_buf_set_lines(0, 0, -1, true, default)
+            util.set_buf_contents(0, opts.default)
         end
         if opts.buf_init then
             run_fn_or_cmd(opts.buf_init)
