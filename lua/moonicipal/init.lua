@@ -92,6 +92,10 @@ function M.select(options, opts)
     end)
 end
 
+function M.abort(msg)
+    util.abort(msg)
+end
+
 function M.fix_echo()
     util.fix_echo()
 end

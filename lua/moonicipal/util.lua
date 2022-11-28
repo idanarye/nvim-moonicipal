@@ -1,9 +1,27 @@
 M = {}
 
+local ABORT_KEY = {'moonicipal', 'abort'}
+
+function M.abort(msg)
+    error({[ABORT_KEY] = msg or false})
+end
+
 function M.defer_to_coroutine(dlg, ...)
     local args = {...}
     local co = coroutine.create(function()
         xpcall(dlg, function(error)
+            if type(error) == 'table' then
+                local abort_message = error[ABORT_KEY]
+                if abort_message ~= nil then
+                    if abort_message then
+                        vim.api.nvim_err_writeln(abort_message)
+                    end
+                    return
+                end
+            end
+            if type(error) ~= 'string' then
+                error = vim.inspect(error)
+            end
             local traceback = debug.traceback(error, 2)
             traceback = string.gsub(traceback, '\t', string.rep(' ', 8))
             vim.api.nvim_err_writeln(traceback)
