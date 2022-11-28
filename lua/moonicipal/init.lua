@@ -59,10 +59,10 @@ function M.read_task_file()
 end
 
 ---@class MoonicipalInputOptions
----@field prompt? string 
+---@field prompt? string
 ---@field default? string
 
----@param opts MoonicipalInputOptions
+---@param opts? MoonicipalInputOptions
 function M.input(opts)
     local new_opts = {}
     if opts then
@@ -75,10 +75,10 @@ function M.input(opts)
 end
 
 ---@class MoonicipalSelectOptions
----@field prompt? string 
+---@field prompt? string
 ---@field format? MoonicipalOptionTransformer
 
----@param opts MoonicipalSelectOptions
+---@param opts? MoonicipalSelectOptions
 function M.select(options, opts)
     local new_opts = {}
     if opts then
