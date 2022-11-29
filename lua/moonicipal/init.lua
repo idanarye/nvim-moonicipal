@@ -66,8 +66,8 @@ end
 function M.input(opts)
     local new_opts = {}
     if opts then
-        opts.prompt = new_opts.prompt
-        opts.default = new_opts.default
+        new_opts.prompt = opts.prompt
+        new_opts.default = opts.default
     end
     return util.resume_with(function(resumer)
         vim.ui.input(new_opts, resumer)
