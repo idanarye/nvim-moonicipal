@@ -1,0 +1,19 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [master, main, develop]
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: MunifTanjim/setup-neovim-action@v1
+      - name: Install Dependencies
+        run: |
+          git clone --depth 1 https://github.com/idanarye/plenary.nvim --branch async-testing ../plenary.nvim
+      - name: Run tests
+        run: |
+          make test
