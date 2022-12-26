@@ -18,7 +18,9 @@ function BeforeTestCleanup()
         vim.api.nvim_win_close(winnr, true)
     end
     -- Remove tasks file
-    vim.fn.delete(MOONICIPAL_TASKS_FILE_NAME)
+    WaitFor(1, function()
+        return os.remove(MOONICIPAL_TASKS_FILE_NAME) == nil
+    end, 1)
 end
 
 function SetTasksFile(content)
@@ -55,5 +57,19 @@ function WaitFor(timeout_secs, pred, sleep_ms)
             error('Took too long (' .. (iteration_time - init_time) .. ' seconds)')
         end
         Sleep(sleep_ms or 10)
+    end
+end
+
+function Override(tbl, overrides)
+    return function()
+        local originals = {}
+        for key, value in pairs(overrides) do
+            originals[key] = {rawget(tbl, key)}
+            rawset(tbl, key, value)
+        end
+        coroutine.yield()
+        for key, value in pairs(originals) do
+            rawset(tbl, key, value[1])
+        end
     end
 end
