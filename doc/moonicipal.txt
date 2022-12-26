@@ -1,22 +1,25 @@
-M.setup({config})                                                      *M.setup*
+================================================================================
+Moonicipal - Task Runner for Rapidly Changing Personal Tasks        *moonicipal*
+
+Moonicipal is a task runner that focuses on personal tasks that are easy to
+write and to change:
+
+* Task files are personal - users can edit them without breaking the
+  workflow for other developers that use the same project.
+* Tasks are Lua functions that run inside Neovim - they can can easily
+  access all of Neovim's context and functionalities, and easily interact
+  with other Neovim plugins.
+* The task functions always run in coroutines, and some helpers are provided
+  for writing async code instead of using callbacks.
+* The task file is reloaded each time a user runs a task, so it can be
+  edited rapidly.
+* Caching facilities for saving things like build configuration or
+  test/example-to-run without having to change the tasks file each time.
+
+M.setup({config})                                             *moonicipal.setup*
 
     Parameters: ~
         {config}  (MoonicipalSettings)
-
-
-M.tasks_file()                                                    *M.tasks_file*
-
-    Returns: ~
-        (Populator|fun(opts:Decoration)|MoonicipalTask)
-
-
-M.select_and_invoke()                                      *M.select_and_invoke*
-
-
-M.invoke()                                                            *M.invoke*
-
-
-M.read_task_file()                                            *M.read_task_file*
 
 
 MoonicipalInputOptions                                  *MoonicipalInputOptions*
@@ -26,7 +29,7 @@ MoonicipalInputOptions                                  *MoonicipalInputOptions*
         {default?}  (string)
 
 
-M.input({opts?})                                                       *M.input*
+M.input({opts?})                                              *moonicipal.input*
 
     Parameters: ~
         {opts?}  (MoonicipalInputOptions)
@@ -39,28 +42,28 @@ MoonicipalSelectOptions                                *MoonicipalSelectOptions*
         {format?}  (MoonicipalOptionTransformer)
 
 
-M.select({opts?})                                                     *M.select*
+M.select({opts?})                                            *moonicipal.select*
 
     Parameters: ~
         {opts?}  (MoonicipalSelectOptions)
 
 
-M.abort()                                                              *M.abort*
+M.abort()                                                     *moonicipal.abort*
 
 
-M.fix_echo()                                                        *M.fix_echo*
+M.fix_echo()                                               *moonicipal.fix_echo*
 
 
-M.sleep()                                                              *M.sleep*
+M.sleep()                                                     *moonicipal.sleep*
 
 
-M.fake_scratch_buffer()                                  *M.fake_scratch_buffer*
+M.fake_scratch_buffer()                         *moonicipal.fake_scratch_buffer*
 
 
-M.get_buf_contents()                                        *M.get_buf_contents*
+M.get_buf_contents()                               *moonicipal.get_buf_contents*
 
 
-M.set_buf_contents()                                        *M.set_buf_contents*
+M.set_buf_contents()                               *moonicipal.set_buf_contents*
 
 
 MoonicipalSettings                                          *MoonicipalSettings*

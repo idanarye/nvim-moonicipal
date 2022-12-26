@@ -1,3 +1,20 @@
+---@mod moonicipal Moonicipal - Task Runner for Rapidly Changing Personal Tasks
+---@brief [[
+---Moonicipal is a task runner that focuses on personal tasks that are easy to
+---write and to change:
+---
+---* Task files are personal - users can edit them without breaking the
+---  workflow for other developers that use the same project.
+---* Tasks are Lua functions that run inside Neovim - they can can easily
+---  access all of Neovim's context and functionalities, and easily interact
+---  with other Neovim plugins.
+---* The task functions always run in coroutines, and some helpers are provided
+---  for writing async code instead of using callbacks.
+---* The task file is reloaded each time a user runs a task, so it can be
+---  edited rapidly.
+---* Caching facilities for saving things like build configuration or
+---  test/example-to-run without having to change the tasks file each time.
+---@brief ]]
 local M = {}
 
 local util = require'moonicipal.util'
@@ -41,19 +58,23 @@ function M.setup(config)
     define_edit_function('MCtedit', 'tabnew')
 end
 
+---@private
 ---@return Populator | fun(opts: Decoration) | MoonicipalTask
 function M.tasks_file()
     return tasks_file.populator()
 end
 
+---@private
 function M.select_and_invoke()
     M.read_task_file():select_and_invoke()
 end
 
+---@private
 function M.invoke(task_name, ...)
     M.read_task_file():invoke(task_name, ...)
 end
 
+---@private
 function M.read_task_file()
     return tasks_file.load(get_file_name())
 end
