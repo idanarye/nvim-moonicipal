@@ -1,9 +1,9 @@
 local M = {}
 
-local util = require'moonicipal/util'
-local tasks_file = require'moonicipal/tasks_file'
+local util = require'moonicipal.util'
+local tasks_file = require'moonicipal.tasks_file'
 
-M.settings = require'moonicipal/settings'
+M.settings = require'moonicipal.settings'
 
 local function get_file_name()
     return M.settings.file_prefix .. '.moonicipal.lua'
@@ -41,7 +41,7 @@ function M.setup(config)
     define_edit_function('MCtedit', 'tabnew')
 end
 
----@return Populator | fun(opts: Decoration) | MoonicipalTaskClassInside
+---@return Populator | fun(opts: Decoration) | MoonicipalTask
 function M.tasks_file()
     return tasks_file.populator()
 end

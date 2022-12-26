@@ -1,16 +1,16 @@
-local util = require'moonicipal/util'
+local util = require'moonicipal.util'
 
----@class MoonicipalTaskClassInside
+---@class MoonicipalTask
 ---@field task_def table
 ---@field context table
 ---@field cache table Data that will be there on the new run
-local MoonicipalTaskClassInside = {}
+local MoonicipalTask = {}
 
 --- Check if this is the entry task of the current execution.
 ---@return
 ---| true # if this task was invoked directly from a user command
 ---| false # if this task was invoked as a dependency of another task
-function MoonicipalTaskClassInside:is_main()
+function MoonicipalTask:is_main()
     return self.context.main_task == self.task_def
 end
 
@@ -41,13 +41,13 @@ end
 ---@param dlg fun(...: P): T
 ---@param ... P
 ---@return T
-function MoonicipalTaskClassInside:cache_result(dlg, ...)
-    local cached = self.cache[MoonicipalTaskClassInside.cache_result]
+function MoonicipalTask:cache_result(dlg, ...)
+    local cached = self.cache[MoonicipalTask.cache_result]
     if cached ~= nil and not self:is_main() then
         return unpack(cached)
     end
     local new_result = {dlg(...)}
-    self.cache[MoonicipalTaskClassInside.cache_result] = new_result
+    self.cache[MoonicipalTask.cache_result] = new_result
     return unpack(new_result)
 end
 
@@ -81,7 +81,7 @@ end
 ---@param dlg fun(...: P): T
 ---@param ... P
 ---@return T
-function MoonicipalTaskClassInside:cached_buf_in_tab(dlg, ...)
+function MoonicipalTask:cached_buf_in_tab(dlg, ...)
     local cache_key = 'Moonicipal:cached_buf_in_tab:' .. self.task_def.name
     for _, win_nr in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
         local buf_nr = vim.api.nvim_win_get_buf(win_nr)
@@ -155,7 +155,7 @@ end
 --
 ---@param cfg? CachedChoiceConfiguration The configuraiton. `key` is mandatory, and `format` is probably needed.
 ---@return CachedChoice
-function MoonicipalTaskClassInside:cached_choice(cfg)
+function MoonicipalTask:cached_choice(cfg)
     if cfg == nil then
         cfg = {}
     end
@@ -202,7 +202,7 @@ end
 
 ---@param opts MoonicipalCachedDataCellOptions
 ---@return string?
-function MoonicipalTaskClassInside:cached_data_cell(opts)
+function MoonicipalTask:cached_data_cell(opts)
     local cached_buffer_name = 'Moonicipal:cached_data_cell:' .. self.task_def.name
 
     local existing_buf_nr = nil
@@ -250,4 +250,4 @@ function MoonicipalTaskClassInside:cached_data_cell(opts)
     end
 end
 
-return MoonicipalTaskClassInside
+return MoonicipalTask

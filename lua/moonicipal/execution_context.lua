@@ -1,4 +1,4 @@
-local util = require'moonicipal/util'
+local util = require'moonicipal.util'
 
 local M = {}
 
@@ -11,7 +11,7 @@ function M:run(task_def)
         cache = CACHE[task_def.name] or {},
     }
     setmetatable(task_instance, {
-        __index = require'moonicipal/task_class',
+        __index = require'moonicipal.Task',
     })
     local result = {task_def.run(task_instance)}
     local cache = rawget(task_instance, 'cache')

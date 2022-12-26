@@ -29,7 +29,9 @@ end
 ---@class MoonicipalSettings
 ---@field file_prefix? string
 ---@field tasks_selection_lru_size? number
-return META:new {
+local Settings = {
     file_prefix = '.' .. (os.getenv('USER') or os.getenv('USERNAME')),
     tasks_selection_lru_size = 5,
 }
+
+return Settings

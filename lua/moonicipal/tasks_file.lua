@@ -1,6 +1,6 @@
-local util = require'moonicipal/util'
-local execution_context = require'moonicipal/execution_context'
-local MunicipalTaskOutside = require'moonicipal/task_class_outside'
+local util = require'moonicipal.util'
+local execution_context = require'moonicipal.execution_context'
+local MunicipalTaskOutside = require'moonicipal.task_class_outside'
 
 local M = {}
 
@@ -103,7 +103,7 @@ function T:select_and_invoke()
             table.remove(selection_lru, old_index)
         end
         table.insert(selection_lru, task_name)
-        local max_length = require'moonicipal/settings'.tasks_selection_lru_size
+        local max_length = require'moonicipal.settings'.tasks_selection_lru_size
         if 0 <= max_length then
             while max_length < #selection_lru do
                 table.remove(selection_lru, 1)
