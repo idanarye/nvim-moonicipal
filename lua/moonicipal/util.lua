@@ -97,7 +97,7 @@ function M.fix_echo()
     table.insert(resumable_threads, co)
     vim.schedule(function()
         local prefix = vim.api.nvim_replace_termcodes(get_keybind_prefix_for_running_command(), true, false, true)
-        local keycmd = 'lua require"moonicipal/util"._resume_all_threads()\n'
+        local keycmd = 'lua require"moonicipal.util"._resume_all_threads()\n'
         vim.api.nvim_feedkeys(prefix .. keycmd, 'n', false)
     end)
     coroutine.yield()
