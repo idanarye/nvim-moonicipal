@@ -1,4 +1,4 @@
-[![CI Status](https://github.com/idanarye/nvim-moonicipal/workflows/CI/badge.svg)](https://github.com/idanarye/moonicipal/actions)
+[![CI Status](https://github.com/idanarye/nvim-moonicipal/workflows/CI/badge.svg)](https://github.com/idanarye/nvim-moonicipal/actions)
 
 INTRODUCTION
 ============
