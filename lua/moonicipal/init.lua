@@ -15,6 +15,10 @@
 ---* Caching facilities for saving things like build configuration or
 ---  test/example-to-run without having to change the tasks file each time.
 ---@brief ]]
+
+---@toc moonicipal.contents
+---@divider =
+
 local M = {}
 
 local util = require'moonicipal.util'
