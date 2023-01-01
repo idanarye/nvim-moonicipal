@@ -30,7 +30,9 @@ local function get_file_name()
     return M.settings.file_prefix .. '.moonicipal.lua'
 end
 
+---Configure Moonicipal and create the Vim commands.
 ---@param config MoonicipalSettings
+---@see MoonicipalSettings
 function M.setup(config)
     for key, value in pairs(config) do
         M.settings[key] = value
@@ -83,11 +85,15 @@ function M.read_task_file()
     return tasks_file.load(get_file_name())
 end
 
+---Fields for the `opts` argument of |moonicipal.input|.
 ---@class MoonicipalInputOptions
----@field prompt? string
----@field default? string
+---@field prompt? string A prompt to display to the user when they enter the text
+---@field default? string A default text the user can confirm or edit
 
+---Use |vim.ui.input()| from a Lua coroutine, returning to the coroutine after
+---the user entered text.
 ---@param opts? MoonicipalInputOptions
+---@return string|nil # The text entered by the user
 function M.input(opts)
     local new_opts = {}
     if opts then
@@ -100,9 +106,12 @@ function M.input(opts)
 end
 
 ---@class MoonicipalSelectOptions
----@field prompt? string
----@field format? MoonicipalOptionTransformer
+---@field prompt? string A prompt to display to the user when they select the option
+---@field format? MoonicipalOptionTransformer How to display the options in the selection UI
 
+---Use |vim.ui.select()| from a Lua coroutine, returning to the coroutine after
+---the user selected an option.
+---@param options any[] The options for the user to select from
 ---@param opts? MoonicipalSelectOptions
 function M.select(options, opts)
     local new_opts = {}
@@ -110,6 +119,15 @@ function M.select(options, opts)
         new_opts.prompt = opts.prompt
         if opts.format then
             new_opts.format_item = util.transformer_as_function(opts.format)
+        end
+    end
+    if new_opts.format_item == nil then
+        function new_opts.format_item(item)
+            if type(item) == 'string' then
+                return item
+            else
+                return vim.inspect(item)
+            end
         end
     end
     return util.resume_with(function(resumer)

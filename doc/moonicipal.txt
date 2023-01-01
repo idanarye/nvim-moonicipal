@@ -1,4 +1,4 @@
-================================================================================
+==============================================================================
 Moonicipal - Task Runner for Rapidly Changing Personal Tasks        *moonicipal*
 
 Moonicipal is a task runner that focuses on personal tasks that are easy to
@@ -16,46 +16,59 @@ write and to change:
 * Caching facilities for saving things like build configuration or
   test/example-to-run without having to change the tasks file each time.
 
-================================================================================
+==============================================================================
 Table of Contents                                          *moonicipal.contents*
 
-Moonicipal - Task Runner for Rapidly Changing Personal Tasks········|moonicipal|
-Moonicipal setup··············································|moonicipal-setup|
-Moonicipal quick start··································|moonicipal-quick-start|
-Moonicipal Commands········································|moonicipal-commands|
+Moonicipal - Task Runner for Rapidly Changing Personal Tasks ······ |moonicipal|
+Moonicipal setup ············································ |moonicipal-setup|
+Moonicipal quick start ································ |moonicipal-quick-start|
+Moonicipal Commands ······································ |moonicipal-commands|
 
-================================================================================
+==============================================================================
 
 M.setup({config})                                             *moonicipal.setup*
+    Configure Moonicipal and create the Vim commands.
 
     Parameters: ~
         {config}  (MoonicipalSettings)
 
+    See: ~
+        |MoonicipalSettings|
+
 
 MoonicipalInputOptions                                  *MoonicipalInputOptions*
+    Fields for the `opts` argument of |moonicipal.input|.
 
     Fields: ~
-        {prompt?}   (string)
-        {default?}  (string)
+        {prompt?}   (string)  A prompt to display to the user when they enter the text
+        {default?}  (string)  A default text the user can confirm or edit
 
 
 M.input({opts?})                                              *moonicipal.input*
+    Use |vim.ui.input()| from a Lua coroutine, returning to the coroutine after
+    the user entered text.
 
     Parameters: ~
         {opts?}  (MoonicipalInputOptions)
+
+    Returns: ~
+        (string|nil)   The text entered by the user
 
 
 MoonicipalSelectOptions                                *MoonicipalSelectOptions*
 
     Fields: ~
-        {prompt?}  (string)
-        {format?}  (MoonicipalOptionTransformer)
+        {prompt?}  (string)                       A prompt to display to the user when they select the option
+        {format?}  (MoonicipalOptionTransformer)  How to display the options in the selection UI
 
 
-M.select({opts?})                                            *moonicipal.select*
+M.select({options}, {opts?})                                 *moonicipal.select*
+    Use |vim.ui.select()| from a Lua coroutine, returning to the coroutine after
+    the user selected an option.
 
     Parameters: ~
-        {opts?}  (MoonicipalSelectOptions)
+        {options}  (any[])                    The options for the user to select from
+        {opts?}    (MoonicipalSelectOptions)
 
 
 M.abort()                                                     *moonicipal.abort*
@@ -76,7 +89,7 @@ M.get_buf_contents()                               *moonicipal.get_buf_contents*
 M.set_buf_contents()                               *moonicipal.set_buf_contents*
 
 
-================================================================================
+==============================================================================
 Moonicipal setup                                              *moonicipal-setup*
 
 Add this to your `init.lua`:
@@ -88,7 +101,7 @@ Add this to your `init.lua`:
 `file_prefix` is optional - if left unset, Moonicipal will set it using the
 username form the OS. See |MoonicipalSettings| for more setup options.
 
-================================================================================
+==============================================================================
 Moonicipal quick start                                  *moonicipal-quick-start*
 
 In a project, run `:MCedit build` (see |:MCedit|) which will open a new
@@ -115,7 +128,7 @@ Save the tasks file, and run `:MC build` (see |:MC|). Alternatively, run
 Use `:MCedit` again (with or without parameter) to go back to the task file
 and edit it whenever you want.
 
-================================================================================
+==============================================================================
 Moonicipal Commands                                        *moonicipal-commands*
 
 These commands will only be created after `require'moonicipal'.setup()` is
@@ -191,7 +204,7 @@ CachedChoiceConfiguration                            *CachedChoiceConfiguration*
         {format}  (MoonicipalOptionTransformer)  How to display the option in the selection UI.
 
 
-CachedChoice                                                      *CachedChoice*
+CachedChoice : CachedChoiceConfiguration                          *CachedChoice*
 
 
 MoonicipalTask:cached_choice({cfg?})              *MoonicipalTask:cached_choice*
