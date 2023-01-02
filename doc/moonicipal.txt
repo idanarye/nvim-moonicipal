@@ -189,11 +189,16 @@ add a scaffold and will not go into insert mode.
 task file in a new split, vertical split, or tab.
 
 MoonicipalSettings                                          *MoonicipalSettings*
-    hi
+    Settings for |moonicipal.setup|.
 
     Fields: ~
-        {file_prefix?}               (string)
-        {tasks_selection_lru_size?}  (number)
+        {file_prefix?}               (string)  A prefix for the name of the Moonicipal tasks file.
+                                               The tasks file will end up being named
+                                               "`<file_prefix>.moonicipal.lua`". Defaults to `.$USER`.
+        {tasks_selection_lru_size?}  (number)  |:MC| without argument will remember the last tasks
+                                               the user has chosen and put them at the start of the
+                                               list. This parameter controls how many tasks can be
+                                               remembered. Defaults to 5.
 
 
 MoonicipalTask                                                  *MoonicipalTask*

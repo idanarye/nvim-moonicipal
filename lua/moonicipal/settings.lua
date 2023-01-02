@@ -26,8 +26,16 @@ function META:__newindex(name, value)
     rawset(self, name, value)
 end
 
+---Settings for |moonicipal.setup|.
 ---@class MoonicipalSettings
+---A prefix for the name of the Moonicipal tasks file.
+---The tasks file will end up being named
+---"`<file_prefix>.moonicipal.lua`". Defaults to `.$USER`.
 ---@field file_prefix? string
+---|:MC| without argument will remember the last tasks
+---the user has chosen and put them at the start of the
+---list. This parameter controls how many tasks can be
+---remembered. Defaults to 5.
 ---@field tasks_selection_lru_size? number
 local Settings = {
     file_prefix = '.' .. (os.getenv('USER') or os.getenv('USERNAME')),
