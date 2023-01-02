@@ -28,7 +28,7 @@ Table of Contents                                          *moonicipal.contents*
 Moonicipal - Task Runner for Rapidly Changing Personal Tasks ······ |moonicipal|
 Moonicipal setup ············································ |moonicipal-setup|
 Moonicipal quick start ································ |moonicipal-quick-start|
-Moonicipal Commands ······································ |moonicipal-commands|
+Moonicipal commands ······································ |moonicipal-commands|
 API avaiable from inside a Moonicipal task ···················· |MoonicipalTask|
 
 ==============================================================================
@@ -167,7 +167,7 @@ Use `:MCedit` again (with or without parameter) to go back to the task file
 and edit it whenever you want.
 
 ==============================================================================
-Moonicipal Commands                                        *moonicipal-commands*
+Moonicipal commands                                        *moonicipal-commands*
 
 These commands will only be created after `require'moonicipal'.setup()` is
 called (see |moonicipal-setup|)

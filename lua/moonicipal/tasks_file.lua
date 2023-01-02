@@ -1,69 +1,20 @@
 local util = require'moonicipal.util'
 local execution_context = require'moonicipal.execution_context'
-local MoonicipalTaskOutside = require'moonicipal.task_class_outside'
+local MoonicipalRegistrar = require'moonicipal.Registrar'
 
 local M = {}
 
 ---@class Decoration
 ---@field alias string | string[] Allow invoking the task by some other name. Will not show in the tasks list.
 
----@class Populator
-local P = {}
-function M.populator()
+function M.registrar()
     if type(M.tasks) ~= 'table' then
-        error('populator called not from tasks file')
+        error('registrar called not from tasks file')
     end
     return setmetatable({
         tasks = M.tasks,
         task_names_by_order = M.task_names_by_order,
-    }, P)
-end
-
-function P:__call(decoration)
-    if rawget(self, 'decoration') then
-        error('Only one decoration allowed per task', 2)
-    end
-    rawset(self, 'decoration', decoration)
-end
-
-function P:__index(task_name)
-    return rawget(self, 'tasks')[task_name]
-end
-
-local function as_iterator(value)
-    if value == nil then
-        return function()
-            -- Do nothing - empty iteration
-        end
-    elseif vim.tbl_islist(value) then
-        return ipairs(value)
-    else
-        local need_to_send = true
-        return function()
-            if need_to_send then
-                need_to_send = false
-                return 1, value
-            end
-        end
-    end
-end
-
-function P:__newindex(task_name, task_run_function)
-    vim.validate {
-        {task_run_function, 'function'};
-    }
-    local decoration = rawget(self, 'decoration') or {}
-    rawset(self, 'decoration', nil)
-    local tasks = rawget(self, 'tasks')
-    local task_def = setmetatable({
-        name = task_name,
-        run = task_run_function,
-    }, MoonicipalTaskOutside)
-    table.insert(rawget(self, 'task_names_by_order'), task_name)
-    tasks[task_name] = task_def
-    for _, alias in as_iterator(decoration.alias) do
-        tasks[alias] = task_def
-    end
+    }, MoonicipalRegistrar)
 end
 
 local T = {}

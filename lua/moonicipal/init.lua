@@ -71,9 +71,9 @@ function M.setup(config)
 end
 
 ---@private
----@return Populator | fun(opts: Decoration) | MoonicipalTask
+---@return MoonicipalRegistrar | fun(opts: Decoration) | MoonicipalTask
 function M.tasks_file()
-    return tasks_file.populator()
+    return tasks_file.registrar()
 end
 
 ---@private
