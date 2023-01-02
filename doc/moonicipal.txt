@@ -208,6 +208,74 @@ MoonicipalSettings                                          *MoonicipalSettings*
                                                remembered. Defaults to 5.
 
 
+MoonicipalRegistrar                                        *MoonicipalRegistrar*
+    The object used for registering tasks insides a tasks file, and for invoking
+    other tasks as dependencies.
+
+
+Moonicipal tasks are registered as methods on the registrar, but unlike
+regular Lua semantics the registrar is not the `self` of these methods: >
+    function T:registrar_and_task_self_are_different()
+        assert(self ~= T)
+    end
+<
+The `self` passed to these methods is a |MoonicipalTask|, used mainly for
+accessing the task's cache. Meanwhil the registrar can be used from inside a
+task to access other methods: >
+    function T:dependency()
+        return 42
+    end
+
+    function T:dependant_user()
+        local value_from_dependency = T:dependency()
+        assert(value_from_dependency == 42)
+    end
+<
+
+MoonicipalRegistrarDecoration                    *MoonicipalRegistrarDecoration*
+    Passed to the registrar object as a function argument to configure the next
+    task:
+        T { alias = 'other_name_for_the_task' }
+        function T:some_task()
+            -- task body
+        end
+
+    Fields: ~
+        {alias}  (string|string[])  Allow invoking the task by some other name.
+                                    Will not show in the tasks list.
+
+
+Registrar:__call()                                            *Registrar:__call*
+
+
+    See: ~
+        |MoonicipalRegistrarDecoration|
+
+
+Registrar:__index()                                          *Registrar:__index*
+    Invoke another task as dependency:
+        function T:dependency()
+            return 42
+        end
+
+        function T:dependant_user()
+            local value_from_dependency = T:dependency()
+            assert(value_from_dependency == 42)
+        end
+
+
+Registrar:__newindex()                                    *Registrar:__newindex*
+    Register a task assigning a function to the registrar object:
+        T['task-name'] = function()
+            -- task body
+        end
+
+    Prefer using Lua's method declaration syntax:
+        function T.task_name()
+            -- task body
+        end
+
+
 ==============================================================================
 API avaiable from inside a Moonicipal task                      *MoonicipalTask*
 

@@ -4,9 +4,6 @@ local MoonicipalRegistrar = require'moonicipal.Registrar'
 
 local M = {}
 
----@class Decoration
----@field alias string | string[] Allow invoking the task by some other name. Will not show in the tasks list.
-
 function M.registrar()
     if type(M.tasks) ~= 'table' then
         error('registrar called not from tasks file')
