@@ -33,23 +33,23 @@ QUICK START
 In a project, run `:MCedit build` which will open a new tasks file that looks like this:
 
 ```lua
-    local moonicipal = require'moonicipal'
-    local T = moonicipal.tasks_file()
+local moonicipal = require'moonicipal'
+local T = moonicipal.tasks_file()
 
-    function T:build()
-        |
-    end
+function T:build()
+    |
+end
 ```
 
 Where `|` is the location of the cursor in insert mode. Write your task - for example, let's use `vim.cmd` to run Vim's `:make` command:
 
 ```lua
-    local moonicipal = require'moonicipal'
-    local T = moonicipal.tasks_file()
+local moonicipal = require'moonicipal'
+local T = moonicipal.tasks_file()
 
-    function T:build()
-        vim.cmd.make()
-    end
+function T:build()
+    vim.cmd.make()
+end
 ```
 
 Save the tasks file, and run `:MC build`. Alternatively, run `:MC` and pick `build` using Neovim's selection UI. This will run your task.
