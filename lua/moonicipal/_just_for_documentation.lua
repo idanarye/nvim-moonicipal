@@ -37,7 +37,7 @@
 ---and edit it whenever you want.
 ---@brief ]]
 
----@mod moonicipal-commands Moonicipal Commands
+---@mod moonicipal-commands Moonicipal commands
 ---@brief [[
 ---These commands will only be created after `require'moonicipal'.setup()` is
 ---called (see |moonicipal-setup|)

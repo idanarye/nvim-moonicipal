@@ -1,4 +1,4 @@
----@class MunicipalTaskOutside
+---@class MoonicipalTaskOutside
 local M = {}
 
 local execution_context = require'moonicipal.execution_context'

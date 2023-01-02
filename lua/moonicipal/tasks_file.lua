@@ -1,6 +1,6 @@
 local util = require'moonicipal.util'
 local execution_context = require'moonicipal.execution_context'
-local MunicipalTaskOutside = require'moonicipal.task_class_outside'
+local MoonicipalTaskOutside = require'moonicipal.task_class_outside'
 
 local M = {}
 
@@ -58,7 +58,7 @@ function P:__newindex(task_name, task_run_function)
     local task_def = setmetatable({
         name = task_name,
         run = task_run_function,
-    }, MunicipalTaskOutside)
+    }, MoonicipalTaskOutside)
     table.insert(rawget(self, 'task_names_by_order'), task_name)
     tasks[task_name] = task_def
     for _, alias in as_iterator(decoration.alias) do
