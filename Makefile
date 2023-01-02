@@ -6,4 +6,4 @@ test:
 
 docs:
 	mkdir -p doc
-	lemmy-help --prefix-func lua/moonicipal/{init,_just_for_documentation,settings,Task}.lua | tee doc/moonicipal.txt
+	lemmy-help --prefix-func lua/moonicipal/{init,_just_for_documentation,settings,Task,CachedChoice}.lua | tee doc/moonicipal.txt

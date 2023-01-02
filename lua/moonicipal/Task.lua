@@ -1,44 +1,53 @@
+---@mod MoonicipalTask API avaiable from inside a Moonicipal task
+---@brief [[
+---All the methods under `MoonicipalTask` can be invoked on `self` inside a
+---Moonicipal task.
+---@brief ]]
+
 local util = require'moonicipal.util'
 
+local CachedChoice = require'moonicipal.CachedChoice'
+
+---@private
 ---@class MoonicipalTask
 ---@field task_def table
 ---@field context table
 ---@field cache table Data that will be there on the new run
 local MoonicipalTask = {}
 
---- Check if this is the entry task of the current execution.
----@return
----| true # if this task was invoked directly from a user command
----| false # if this task was invoked as a dependency of another task
+---Check if this is the entry task of the current execution.
+---@return boolean
+---| true if this task was invoked directly from a user command
+---| false if this task was invoked as a dependency of another task
 function MoonicipalTask:is_main()
     return self.context.main_task == self.task_def
 end
 
--- Use a cached result when the task is called as a dependency.
---
--- When the task is invoked as a main task, the function passed as argument will
--- always be called.
---
--- When the task is invoked as a dependency, the function will only be called if
--- the cache is empty. Otherwise, the cached result will be restored instead.
---
--- Note that the cache is task-bound - using this method multiple times in the
--- same task will use the same cache, even if the passed functions are
--- different.
---
---    function T:dependency()
---        return self:cache_result(function()
---            return moonicipal.input { prompt = "Enter text: " }
---        end)
---    end
---
---    function T:use()
---        local dependency_result = T:dependency()
---        print('You have selected', vim.inspect(dependency_result))
---    end
+---Use a cached result when the task is called as a dependency.
+---
+---When the task is invoked as a main task, the function passed as argument will
+---always be called.
+---
+---When the task is invoked as a dependency, the function will only be called if
+---the cache is empty. Otherwise, the cached result will be restored instead.
+---
+---Note that the cache is task-bound - using this method multiple times in the
+---same task will use the same cache, even if the passed functions are
+---different.
+---
+---    function T:dependency()
+---        return self:cache_result(function()
+---            return moonicipal.input { prompt = "Enter text: " }
+---        end)
+---    end
+---
+---    function T:use()
+---        local dependency_result = T:dependency()
+---        print('You have selected', vim.inspect(dependency_result))
+---    end
 ---@generic T
 ---@generic P
----@param dlg fun(...: P): T
+---@param dlg `fun(...: P): T`
 ---@param ... P
 ---@return T
 function MoonicipalTask:cache_result(dlg, ...)
@@ -51,34 +60,34 @@ function MoonicipalTask:cache_result(dlg, ...)
     return unpack(new_result)
 end
 
--- Create a buffer, and use the result only if the buffer is still open in the
--- current tab.
---
--- The buffer used for the caching is the buffer Vim ends up in when the passed
--- function returns, and it must be a different buffer than the one Vim was in
--- when the function was called. Vim will return to the original window -
--- unless the function has swiched to a new tab.
---
--- See `cache_result` for other notes about the cache.
---
---    function T:log_buffer()
---        return self:cached_buf_in_tab(function()
---            vim.cmd[[new]]
---            vim.o.buftype = 'nowrite'
---            local buf_nr = vim.api.nvim_buf_get_number(0)
---            return function(text)
---                vim.api.nvim_buf_set_lines(buf_nr, -1, -1, true, { text })
---            end
---        end)
---    end
---
---    function T:log()
---        local log_buffer = T:log_buffer()
---        log_buffer(moonicipal.input())
---    end
+---Create a buffer, and use the result only if the buffer is still open in the
+---current tab.
+---
+---The buffer used for the caching is the buffer Vim ends up in when the passed
+---function returns, and it must be a different buffer than the one Vim was in
+---when the function was called. Vim will return to the original window -
+---unless the function has swiched to a new tab.
+---
+---See `cache_result` for other notes about the cache.
+---
+---    function T:log_buffer()
+---        return self:cached_buf_in_tab(function()
+---            vim.cmd[[new]]
+---            vim.o.buftype = 'nowrite'
+---            local buf_nr = vim.api.nvim_buf_get_number(0)
+---            return function(text)
+---                vim.api.nvim_buf_set_lines(buf_nr, -1, -1, true, { text })
+---            end
+---        end)
+---    end
+---
+---    function T:log()
+---        local log_buffer = T:log_buffer()
+---        log_buffer(moonicipal.input())
+---    end
 ---@generic T
 ---@generic P
----@param dlg fun(...: P): T
+---@param dlg `fun(...: P): T`
 ---@param ... P
 ---@return T
 function MoonicipalTask:cached_buf_in_tab(dlg, ...)
@@ -107,85 +116,6 @@ function MoonicipalTask:cached_buf_in_tab(dlg, ...)
     return unpack(result)
 end
 
----@class CachedChoiceConfiguration
----@field key MoonicipalOptionTransformer Mandatory. How to recognize the cached option.
----@field format MoonicipalOptionTransformer How to display the option in the selection UI.
-
----@class CachedChoice: CachedChoiceConfiguration
----@operator call(number): string
-local CachedChoice = {}
-CachedChoice.__index = CachedChoice
-
-function CachedChoice:__call(option)
-    table.insert(self, option)
-end
-
--- Let the user choose from several options, and use a cached result when the
--- task is called as a dependency.
---
--- Unlike `cache_result`, with this method the list of options gets computed
--- even when the cache is used.
---
--- Use the object returned by this methoid as a function to register the
--- options, and then call `:select` on it to let the user choose.
---
---    function T:choose_command()
---        local cc = self:cached_choice {
---            key = 'name',
---            format = function(cmd)
---                return ('%s [%s]'):format(cmd.name, cmd.command)
---            end,
---        }
---        cc {
---            name = 'Show the time',
---            command = 'date',
---        }
---        cc {
---            name = 'Check internet connection',
---            command = 'ping 8.8.8.8',
---        }
---        return cc:select()
---    end
---
---    function T:run_command()
---        local chosen_command = T:choose_command()
---        vim.cmd.new()
---        vim.cmd['terminal'](chosen_command.command)
---    end
---
----@param cfg? CachedChoiceConfiguration The configuraiton. `key` is mandatory, and `format` is probably needed.
----@return CachedChoice
-function MoonicipalTask:cached_choice(cfg)
-    if cfg == nil then
-        cfg = {}
-    end
-    cfg.task = self
-    return setmetatable(cfg, CachedChoice) --[[@as CachedChoice]]
-end
-
---- Let the user choose using `moonicipal.selected`.
-function CachedChoice:select()
-    assert(self.key, '`cached_choice` used without setting a key')
-    local key_fn = util.transformer_as_function(self.key)
-
-    if not self.task:is_main() then
-        local cached_key = self.task.cache[CachedChoice]
-        if cached_key ~= nil then
-            for _, option in ipairs(self) do
-                if key_fn(option) == cached_key then
-                    return option
-                end
-            end
-        end
-    end
-
-    local chosen = require'moonicipal'.select(self, {
-        format = self.format,
-    })
-    self.task.cache[CachedChoice] = key_fn(chosen)
-    return chosen
-end
-
 local function run_fn_or_cmd(fn_or_cmd)
     if vim.is_callable(fn_or_cmd) then
         fn_or_cmd()
@@ -195,11 +125,43 @@ local function run_fn_or_cmd(fn_or_cmd)
 end
 
 ---@class MoonicipalCachedDataCellOptions
----@field win? function | string Run to create a window for the data cell buffer. Defaults to `botright new`
----@field buf_init? function | string Run only if the data cell buffer is created
----@field buf? function | string Run every time to configure the buffer
----@field default? string | string[] yup
+---Run to create a window for the data cell buffer.
+---Defaults to `botright new`
+---@field win? function | string
+---Run only if the data cell buffer is created
+---@field buf_init? function | string
+---Run every time to configure the buffer
+---@field buf? function | string
+---Default text to put in the buffer when it is
+---first created
+---@field default? string | string[]
 
+---Create a data cell - a buffer where the user can put data for other tasks to
+---use.
+---
+---When called from the main task, it'll open the buffer (if its not already
+---open) and configure it. When called from another task (meaning some other
+---task invokes the task that uses `self:cached_data_cell`) it'll return the
+---current content of the buffer, or `nil` if the buffer does not exist.
+---
+---The buffer will remain in memory even if the user closes it - farther
+---invocations as a main task will open it with the cached text, and calls from
+---other tasks will return that text. The cached will be dropped though if the
+---buffer is unloaded (e.g. by using |:bdelete|)
+---
+---    function T:edit_shell_command()
+---        return self:cached_data_cell {
+---            default = 'echo hello world',
+---            buf_init = 'setfiletype bash',
+---        }
+---    end
+---
+---    function T:run_shell_command()
+---        local shell_command = T:edit_shell_command() or moonicipal.abort('No command')
+---        vim.cmd.new()
+---        vim.cmd.terminal(shell_command)
+---    end
+---
 ---@param opts MoonicipalCachedDataCellOptions
 ---@return string?
 function MoonicipalTask:cached_data_cell(opts)
@@ -248,6 +210,56 @@ function MoonicipalTask:cached_data_cell(opts)
     if opts.buf then
         run_fn_or_cmd(opts.buf)
     end
+end
+
+---@class MoonicipalCachedChoiceConfiguration
+---Mandatory. How to recognize the cached option.
+---@field key MoonicipalOptionTransformer
+---How to display the option in the selection UI.
+---@field format MoonicipalOptionTransformer
+
+---Let the user choose from several options, and use a cached result when the
+---task is called as a dependency.
+---
+---Unlike `cache_result`, with this method the list of options gets computed
+---even when the cache is used.
+---
+---Use the object returned by this methoid as a function to register the
+---options, and then call `:select` on it to let the user choose.
+---
+---    function T:choose_command()
+---        local cc = self:cached_choice {
+---            key = 'name',
+---            format = function(cmd)
+---                return ('%s [%s]'):format(cmd.name, cmd.command)
+---            end,
+---        }
+---        cc {
+---            name = 'Show the time',
+---            command = 'date',
+---        }
+---        cc {
+---            name = 'Check internet connection',
+---            command = 'ping 8.8.8.8',
+---        }
+---        return cc:select()
+---    end
+---
+---    function T:run_command()
+---        local chosen_command = T:choose_command()
+---        vim.cmd.new()
+---        vim.cmd['terminal'](chosen_command.command)
+---    end
+---
+---@param cfg? MoonicipalCachedChoiceConfiguration The configuraiton. `key` is mandatory, and `format` is probably needed.
+---@return MoonicipalCachedChoice
+---@see MoonicipalCachedChoice
+function MoonicipalTask:cached_choice(cfg)
+    if cfg == nil then
+        cfg = {}
+    end
+    cfg.task = self
+    return setmetatable(cfg, CachedChoice) --[[@as MoonicipalCachedChoice]]
 end
 
 return MoonicipalTask
