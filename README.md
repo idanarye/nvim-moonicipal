@@ -12,6 +12,8 @@ write and to change:
 * The task file is reloaded each time a user runs a task, so it can be edited rapidly.
 * Caching facilities for saving things like build configuration or test/example-to-run without having to change the tasks file each time.
 
+Moonicipal is the successor to [Omnipytent](https://github.com/idanarye/vim-omnipytent), but written in Lua and executes tasks that are written in Lua. This allows for better integration with Neovim and with Lua plugins and for easier asynchronous tasks.
+
 FEATURES (IMPLEMENTED/PLANNED)
 ==============================
 
