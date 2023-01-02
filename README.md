@@ -29,6 +29,19 @@ FEATURES (IMPLEMENTED/PLANNED)
 * [ ] null-ls source with customizable code actions for creating commonly used tasks.
 * [ ] Allow writing the tasks file in Fennel (and other Lua based languages?)
 
+SETUP
+=====
+
+Install Moonicipal with your plugin manager of choice, and add this to your `init.lua`:
+
+```lua
+require'moonicipal'.setup {
+    file_prefix = '.my-username',
+}
+```
+
+`file_prefix` is optional - if left unset, Moonicipal will set it using the username form the OS. See `:help MoonicipalSettings` for more setup options.
+
 QUICK START
 ===========
 
