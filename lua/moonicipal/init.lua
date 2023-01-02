@@ -135,27 +135,46 @@ function M.select(options, opts)
     end)
 end
 
+---Abort the Moonicipal invocation.
+---
+---Unlike a regular `error`, which will be caught and make Moonicipal print the
+---stack trace of the error, `moonicipal.abort` will only print the message.
 function M.abort(msg)
     util.abort(msg)
 end
 
+---When a coroutine is resumed from a Neovim callback, lines printed from Vim's
+---|:echo| or Lua's `print` will not stack up. Calling this will make them
+---stack again (until the coroutine is paused and resumed from a callback again)
 function M.fix_echo()
     util.fix_echo()
 end
 
-function M.sleep(timeout)
-    util.sleep(timeout)
+---Pause the coroutine for the specified duration
+---@param milliseconds number The duration to sleep for, in milliseconds
+function M.sleep(milliseconds)
+    util.sleep(milliseconds)
 end
 
+---Make the current buffer a scratch buffer.
+---
+---This is similar to `:set buftype=nofile`, except the buffer can work with
+---LSP clients.
+---@param set_buffer_name_to? string Manually set a name for the buffer
 function M.fake_scratch_buffer(set_buffer_name_to)
     util.fake_scratch_buffer(set_buffer_name_to)
-
 end
 
+---Get the contents of a buffer as a single string.
+---@param buf_nr number The buffer number
+---@return string
 function M.get_buf_contents(buf_nr)
     return util.get_buf_contents(buf_nr)
 end
 
+---Set the content of a buffer
+---@param buf_nr number The buffer number
+---@param content string|string[] The content to set
 function M.set_buf_contents(buf_nr, content)
     util.set_buf_contents(buf_nr, content)
 end

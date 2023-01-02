@@ -72,21 +72,52 @@ M.select({options}, {opts?})                                 *moonicipal.select*
 
 
 M.abort()                                                     *moonicipal.abort*
+    Abort the Moonicipal invocation.
+
+    Unlike a regular `error`, which will be caught and make Moonicipal print the
+    stack trace of the error, `moonicipal.abort` will only print the message.
 
 
 M.fix_echo()                                               *moonicipal.fix_echo*
+    When a coroutine is resumed from a Neovim callback, lines printed from Vim's
+    |:echo| or Lua's `print` will not stack up. Calling this will make them
+    stack again (until the coroutine is paused and resumed from a callback again)
 
 
-M.sleep()                                                     *moonicipal.sleep*
+M.sleep({milliseconds})                                       *moonicipal.sleep*
+    Pause the coroutine for the specified duration
+
+    Parameters: ~
+        {milliseconds}  (number)  The duration to sleep for, in milliseconds
 
 
-M.fake_scratch_buffer()                         *moonicipal.fake_scratch_buffer*
+                                                *moonicipal.fake_scratch_buffer*
+M.fake_scratch_buffer({set_buffer_name_to?})
+    Make the current buffer a scratch buffer.
+
+    This is similar to `:set buftype=nofile`, except the buffer can work with
+    LSP clients.
+
+    Parameters: ~
+        {set_buffer_name_to?}  (string)  Manually set a name for the buffer
 
 
-M.get_buf_contents()                               *moonicipal.get_buf_contents*
+M.get_buf_contents({buf_nr})                       *moonicipal.get_buf_contents*
+    Get the contents of a buffer as a single string.
+
+    Parameters: ~
+        {buf_nr}  (number)  The buffer number
+
+    Returns: ~
+        (string)
 
 
-M.set_buf_contents()                               *moonicipal.set_buf_contents*
+M.set_buf_contents({buf_nr}, {content})            *moonicipal.set_buf_contents*
+    Set the content of a buffer
+
+    Parameters: ~
+        {buf_nr}   (number)           The buffer number
+        {content}  (string|string[])  The content to set
 
 
 ==============================================================================
@@ -158,6 +189,7 @@ add a scaffold and will not go into insert mode.
 task file in a new split, vertical split, or tab.
 
 MoonicipalSettings                                          *MoonicipalSettings*
+    hi
 
     Fields: ~
         {file_prefix?}               (string)

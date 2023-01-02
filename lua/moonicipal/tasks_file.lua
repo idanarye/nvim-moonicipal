@@ -114,21 +114,13 @@ function T:select_and_invoke()
     end)
 end
 
-function T:get_task(task_name)
-    --TODO: check that it's really a task, and not just any table?
-    if type(task_name) == 'table' then
-        return task_name
-    end
+function T:invoke(task_name)
     local task = self.tasks[task_name]
-    if task == nil then
-        error('No such task ' .. vim.inspect(task_name))
+    if not task then
+        vim.api.nvim_err_writeln('No such task ' .. vim.inspect(task_name))
+        return
     end
-    return task
-end
-
-function T:invoke(task)
-    task = self:get_task(task)
-    util.defer_to_coroutine(function()
+    return util.defer_to_coroutine(function()
         local context = execution_context(self)
         context.main_task = task
         context:run(task)

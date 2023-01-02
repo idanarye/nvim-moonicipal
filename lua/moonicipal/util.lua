@@ -104,9 +104,9 @@ function M.fix_echo()
     vim.cmd[[echon]]  -- clear the command line
 end
 
-function M.sleep(timeout)
+function M.sleep(milliseconds)
     M.resume_with(function(resumer)
-        vim.defer_fn(resumer, timeout)
+        vim.defer_fn(resumer, milliseconds)
     end)
 end
 
