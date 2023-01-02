@@ -16,10 +16,11 @@ write and to change:
 * Caching facilities for saving things like build configuration or
   test/example-to-run without having to change the tasks file each time.
 
-Moonicipal is the successor to Omnipytent
-(https://github.com/idanarye/vim-omnipytent), but written in Lua and
-executes tasks that are written in Lua. This allows for better integration
-with Neovim and with Lua plugins and for easier asynchronous tasks.
+Moonicipal is the successor to the Pythonic test runner Omnipytent
+(https://github.com/idanarye/vim-omnipytent). Since Moonicipal is written in
+Lua and executes tasks that are written in Lua, it allows for better
+integration with Neovim and with Lua plugins and for simpler semantics of
+asynchronous tasks.
 
 ==============================================================================
 Table of Contents                                          *moonicipal.contents*
