@@ -14,6 +14,10 @@ write and to change:
 
 Moonicipal is the successor to the Pythonic test runner [Omnipytent](https://github.com/idanarye/vim-omnipytent). Since Moonicipal is written in Lua and executes tasks that are written in Lua, it allows for better integration with Neovim and with Lua plugins and for simpler semantics of asynchronous tasks.
 
+For a more through explanation, please refer to this blog post: https://dev.to/idanarye/moonicipal-explained-4h02
+
+[![asciicast](https://asciinema.org/a/550522.svg)](https://asciinema.org/a/550522)
+
 FEATURES (IMPLEMENTED/PLANNED)
 ==============================
 
