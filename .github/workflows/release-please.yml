@@ -1,0 +1,29 @@
+on:
+  push:
+    branches:
+      - develop
+name: release-please
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: simple
+          default-branch: develop
+          package-name: nvim-moonicipal
+          release-as: 0.1.1
+      - uses: actions/checkout@v3
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          ref: main
+      - name: Update main branch to develop branch
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          git fetch origin develop
+          git merge --ff-only origin/develop
+          git push
+permissions:
+  contents: write
+  pull-requests: write
