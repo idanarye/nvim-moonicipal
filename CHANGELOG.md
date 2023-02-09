@@ -11,8 +11,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * `moonicipal.fix_echo()` after fzf-lua selection ([#1](https://github.com/idanarye/nvim-moonicipal/issues/1)) ([18afd81](https://github.com/idanarye/nvim-moonicipal/commit/18afd818c008500575a9aec5cb78c81c8141e4c2))
 
-## [Unreleased]
-
 ## 0.1.0 - 2023-01-02
 ### Added
 - Syntax for defining tasks.
