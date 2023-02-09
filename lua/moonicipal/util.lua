@@ -92,14 +92,19 @@ local function get_keybind_prefix_for_running_command()
     error('Cannot fix echo from mode ' .. vim.inspect(mode))
 end
 
+local function resume_threads()
+    local prefix = vim.api.nvim_replace_termcodes(get_keybind_prefix_for_running_command(), true, false, true)
+    local keycmd = 'lua require"moonicipal.util"._resume_all_threads()\n'
+    vim.api.nvim_feedkeys(prefix .. keycmd, 'n', false)
+    if next(resumable_threads) ~= nil then
+        vim.defer_fn(resume_threads, 1)
+    end
+end
+
 function M.fix_echo()
     local co = coroutine.running()
     table.insert(resumable_threads, co)
-    vim.schedule(function()
-        local prefix = vim.api.nvim_replace_termcodes(get_keybind_prefix_for_running_command(), true, false, true)
-        local keycmd = 'lua require"moonicipal.util"._resume_all_threads()\n'
-        vim.api.nvim_feedkeys(prefix .. keycmd, 'n', false)
-    end)
+    vim.schedule(resume_threads)
     coroutine.yield()
     vim.cmd[[echon]]  -- clear the command line
 end
