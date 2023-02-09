@@ -13,7 +13,6 @@ jobs:
           release-type: simple
           default-branch: develop
           package-name: nvim-moonicipal
-          release-as: 0.1.1
       - uses: actions/checkout@v3
         if: ${{ steps.release.outputs.release_created }}
         with:
