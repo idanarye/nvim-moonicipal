@@ -1,4 +1,4 @@
-M = {}
+local M = {}
 
 local ABORT_KEY = {'moonicipal', 'abort'}
 
