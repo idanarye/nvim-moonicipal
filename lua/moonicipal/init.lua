@@ -71,7 +71,7 @@ function M.setup(config)
 end
 
 ---@private
----@return MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask
+---@return MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
 function M.tasks_file()
     return tasks_file.registrar()
 end
