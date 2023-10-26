@@ -4,9 +4,16 @@ local MoonicipalRegistrar = require'moonicipal.Registrar'
 
 local M = {}
 
-function M.registrar()
+function M.registrar(...)
     if type(M.tasks) ~= 'table' then
         error('registrar called not from tasks file')
+    end
+    for _, lib in ipairs({...}) do
+        if rawget(lib, 'tasks') then
+            table.insert(M.libraries, lib)
+        else
+            vim.list_extend(M.libraries, lib)
+        end
     end
     return setmetatable({
         tasks = M.tasks,
@@ -15,26 +22,48 @@ function M.registrar()
 end
 
 local T = {}
+
 function M.load(path)
     local tasks = {}
     local task_names_by_order = {}
+    local libraries = {}
     M.tasks = tasks
     M.task_names_by_order = task_names_by_order
+    M.libraries = libraries
     dofile(path)
     M.tasks = nil
     M.task_names_by_order = nil
     return vim.tbl_extend('error', T, {
         tasks = tasks,
         task_names_by_order = task_names_by_order,
+        libraries = libraries,
     })
 end
 
 local selection_lru = {}
 
-function T:select_and_invoke()
+function T:all_task_names()
     local task_names = vim.fn.copy(self.task_names_by_order)
+    for _, lib in ipairs(self.libraries) do
+        vim.list_extend(task_names, lib.task_names_by_order)
+    end
+
+    local deduped = {}
+    local i = 0
+    local seen = {}
+    for _, task_name in ipairs(task_names) do
+        if not seen[task_name] then
+            seen[task_name] = true
+            i = i + 1
+            deduped[i] = task_name
+        end
+    end
+    return deduped
+end
+
+function T:select_and_invoke()
     local order = vim.tbl_add_reverse_lookup(vim.fn.copy(selection_lru))
-    task_names = vim.fn.sort(task_names, function(a, b)
+    local task_names = vim.fn.sort(self:all_task_names(), function(a, b)
         return (order[b] or 0) - (order[a] or 0)
     end)
     util.defer_to_coroutine(function()
@@ -65,11 +94,19 @@ end
 function T:invoke(task_name)
     local task = self.tasks[task_name]
     if not task then
+        for _, library in ipairs(self.libraries) do
+            task = library.tasks[task_name]
+            if task then
+                break
+            end
+        end
+    end
+    if not task then
         vim.api.nvim_err_writeln('No such task ' .. vim.inspect(task_name))
         return
     end
     return util.defer_to_coroutine(function()
-        local context = execution_context(self)
+        local context = execution_context()
         context.main_task = task
         context:run(task)
     end)
@@ -88,7 +125,16 @@ function M.open_for_edit(edit_cmd, file_name, task_name)
     if task_name ~= nil then
         local task = nil
         if not is_brand_new then
-            task = M.load(file_name).tasks[task_name]
+            local tasks_file = M.load(file_name)
+            task = tasks_file.tasks[task_name]
+            if task == nil then
+                for _, library in ipairs(tasks_file.libraries) do
+                    task = library.tasks[task_name]
+                    if task then
+                        break
+                    end
+                end
+            end
         end
         if task == nil then
             local header = 'function T:' .. task_name .. '()'

@@ -29,6 +29,7 @@ local M = {}
 
 local util = require'moonicipal.util'
 local tasks_file = require'moonicipal.tasks_file'
+local tasks_lib = require'moonicipal.tasks_lib'
 
 M.settings = require'moonicipal.settings'
 
@@ -47,7 +48,7 @@ function M.setup(config)
     local function cmd_complete(arg_lead)
         return vim.tbl_filter(function(task_name)
             return vim.startswith(task_name, arg_lead)
-        end, vim.tbl_keys(M.read_task_file().tasks))
+        end, M.read_task_file():all_task_names())
     end
 
     vim.api.nvim_create_user_command('MC', function(ctx)
@@ -71,9 +72,25 @@ function M.setup(config)
 end
 
 ---@private
+---@param ... any Task libraries to expose
 ---@return MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
-function M.tasks_file()
-    return tasks_file.registrar()
+function M.tasks_file(...)
+    return tasks_file.registrar(...)
+end
+
+---@private
+---@return MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
+function M.tasks_lib()
+    return tasks_lib.new()
+end
+
+---@generic L1 : table
+---@generic L2 : table
+---@param lib1 MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | L1
+---@param lib2 MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | L2
+---@return L1 | L2
+function M.merge_libs(lib1, lib2)
+    return tasks_lib.merge_libs(lib1, lib2)
 end
 
 ---@private
