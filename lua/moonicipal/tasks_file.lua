@@ -154,9 +154,9 @@ function M.open_for_edit(edit_cmd, file_name, task_name)
         else
             if type(task.run) == 'function' then
                 local task_info = debug.getinfo(task.run)
-                -- Go to last line then first, to ensure they are all (or at least most) visible.
                 if vim.startswith(task_info.source, '@') then
                     vim.cmd.edit(task_info.source:sub(2))
+                    -- Go to last line then first, to ensure they are all (or at least most) visible.
                     vim.api.nvim_win_set_cursor(0, {task_info.lastlinedefined, 0})
                     vim.api.nvim_win_set_cursor(0, {task_info.linedefined, 0})
                 end

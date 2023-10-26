@@ -72,18 +72,42 @@ function M.setup(config)
 end
 
 ---@private
----@param ... any Task libraries to expose
+---@param ... any Tasks libraries to expose
 ---@return MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
 function M.tasks_file(...)
     return tasks_file.registrar(...)
 end
 
----@private
+---Create a new tasks library.
+---
+---Task libraries can have tasks on them just like task files (though without
+---the convenience of the |:MCedit| helper). They can be passed as parameters
+---to |moonicipal.tasks_file|, and can be merged with |moonicipal.merge_libs|.
+---
+---Just like a regular tasks file registrar, the task library object can be
+---used to invoke the tasks from other tasks.
 ---@return MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
 function M.tasks_lib()
     return tasks_lib.new()
 end
 
+---Merge two libraries together.
+---
+---This is the way to create library hierarchy. The child library should import
+---the parent library just like a non-library tasks file would, and access it
+---via the library object if it needs to run the parent's tasks from its own
+---tasks, but when returning it should merge itself with the parent so that the
+---user could access tasks from either.
+---
+---The merged object can then be used like a tasks library object would, with
+---the difference that tasks cannot be registered on it.
+---
+---To get LuaLS to offer completions, only two libraries can be merged with a
+---single call. To merge more, just merge the merged library with another
+---library (or another merged library):
+---
+---    `moonicipal.merge_libs(L1, moonicipal.merge_libs(L2, L3))`
+---
 ---@generic L1 : table
 ---@generic L2 : table
 ---@param lib1 MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | L1
