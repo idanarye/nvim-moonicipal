@@ -80,7 +80,8 @@ SUPPLEMENTAL PLUGINS
 
 Moonicipal tasks, being Lua functions that run in Neovim's context, can use any Neovim plugin with ease. There are, however, some supplemental plugins that do not depend on it but were created in order to run inside Moonicipal tasks. The can be used separately but will probably not be as useful without Moonicipal.
 
-* [Channelot](https://github.com/idanarye/nvim-channelot) - for running and controlling jobs, with or without a terminal. Job control is based on Lua coroutines, so Moonicipal tasks can easily use it without have to use the callbacks of Neovim's regular job API.
+* [Channelot](https://github.com/idanarye/nvim-channelot) - for running and controlling jobs, with or without a terminal. Job control is based on Lua coroutines, so Moonicipal tasks can easily use it without having to use the callbacks of Neovim's regular job API.
+  * When using Channelot to compile, lint, or do anything else that emits parsable errors, [Blunder](https://github.com/idanarye/nvim-blunder) can be used to parse these errors into the quickfix list. Blunder can also be used on its own (even without Moonicipal), but unless used together with Channelot it does not support the coroutine synchornization method that Moonicipal generally uses, which means that `require'blunder'.run('...')` will run _after_ the rest of the task.
 * [BuffLS](https://github.com/idanarye/nvim-buffls) - a null-ls source that can be customized for a specific buffer. Works great with Moonicipal's `cached_data_cell`, where it allows to easily add code actions and completions tailored for the specific data cell inside the Moonicipal action that creates it.
 
 CONTRIBUTION GUIDELINES
