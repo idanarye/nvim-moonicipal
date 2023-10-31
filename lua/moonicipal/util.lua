@@ -70,7 +70,7 @@ local function get_keybind_prefix_for_running_command()
     local mode = vim.fn.mode()
     if mode == 'n' then
         return ':'
-    elseif mode == 'i' then
+    elseif mode == 'i' or mode == 'R' then
         return '<C-o>:'
     elseif mode == 'v' or mode == 'V' or mode == CTRL_V then
         return ':<C-u>'
@@ -84,20 +84,25 @@ local function get_keybind_prefix_for_running_command()
             end
         end
         return ':'
-    -- TODO:
-    -- elseif mode == 'R' then
-    -- elseif mode == 'c' then
-    -- elseif mode == 'r' then
+    elseif mode == 'c' or mode == 'r' then
+        return nil
     end
     error('Cannot fix echo from mode ' .. vim.inspect(mode))
 end
 
 local function resume_threads()
-    local prefix = vim.api.nvim_replace_termcodes(get_keybind_prefix_for_running_command(), true, false, true)
-    local keycmd = 'lua require"moonicipal.util"._resume_all_threads()\n'
-    vim.api.nvim_feedkeys(prefix .. keycmd, 'n', false)
-    if next(resumable_threads) ~= nil then
-        vim.defer_fn(resume_threads, 1)
+    local prefix = get_keybind_prefix_for_running_command()
+    if prefix == nil then
+        if next(resumable_threads) ~= nil then
+            vim.defer_fn(resume_threads, 100)
+        end
+    else
+        prefix = vim.api.nvim_replace_termcodes(prefix, true, false, true)
+        local keycmd = 'lua require"moonicipal.util"._resume_all_threads()\n'
+        vim.api.nvim_feedkeys(prefix .. keycmd, 'ni', false)
+        if next(resumable_threads) ~= nil then
+            vim.defer_fn(resume_threads, 1)
+        end
     end
 end
 
