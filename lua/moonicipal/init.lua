@@ -72,17 +72,32 @@ function M.setup(config)
 end
 
 ---@private
----@param ... any Tasks libraries to expose
 ---@return MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
-function M.tasks_file(...)
-    return tasks_file.registrar(...)
+function M.tasks_file()
+    return tasks_file.registrar()
+end
+
+---Include a tasks library.
+---
+---This function should only be used inside the tasks file, to add tasks
+---libraries so  that their tasks could be invoked with |:MC|.
+---
+---Task libraries can be defined with |moonicipal.tasks_lib| or with
+---|moonicipal.merge_libs| (which joins multiple tasks libraries together).
+---
+---@generic L : MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
+---@param lib L
+---@return L # The tasks library passed to it, so that it can be used programmatically
+function M.include(lib)
+    return tasks_file.include(lib)
 end
 
 ---Create a new tasks library.
 ---
 ---Task libraries can have tasks on them just like task files (though without
----the convenience of the |:MCedit| helper). They can be passed as parameters
----to |moonicipal.tasks_file|, and can be merged with |moonicipal.merge_libs|.
+---the convenience of the |:MCedit| helper). They can be included in the tasks
+---file with |moonicipal.include|, and can be merged with
+---|moonicipal.merge_libs|.
 ---
 ---Just like a regular tasks file registrar, the task library object can be
 ---used to invoke the tasks from other tasks.

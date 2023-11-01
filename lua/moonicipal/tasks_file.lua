@@ -4,21 +4,23 @@ local MoonicipalRegistrar = require'moonicipal.Registrar'
 
 local M = {}
 
-function M.registrar(...)
+function M.registrar()
     if type(M.tasks) ~= 'table' then
         error('registrar called not from tasks file')
-    end
-    for _, lib in ipairs({...}) do
-        if rawget(lib, 'tasks') then
-            table.insert(M.libraries, lib)
-        else
-            vim.list_extend(M.libraries, lib)
-        end
     end
     return setmetatable({
         tasks = M.tasks,
         task_names_by_order = M.task_names_by_order,
     }, MoonicipalRegistrar)
+end
+
+function M.include(lib)
+    if rawget(lib, 'tasks') then
+        table.insert(M.libraries, lib)
+    else
+        vim.list_extend(M.libraries, lib)
+    end
+    return lib
 end
 
 local T = {}
