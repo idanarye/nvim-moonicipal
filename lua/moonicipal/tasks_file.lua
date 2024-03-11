@@ -64,7 +64,10 @@ function T:all_task_names()
 end
 
 function T:select_and_invoke()
-    local order = vim.tbl_add_reverse_lookup(vim.fn.copy(selection_lru))
+    local order = {}
+    for k, v in pairs(selection_lru) do
+        order[v] = k
+    end
     local task_names = vim.fn.sort(self:all_task_names(), function(a, b)
         return (order[b] or 0) - (order[a] or 0)
     end)
