@@ -7,11 +7,10 @@ function M.abort(msg)
 end
 
 function M.defer_to_coroutine(dlg, ...)
-    local args = {...}
-    local co = coroutine.create(function()
-        xpcall(dlg, function(error)
-            if type(error) == 'table' then
-                local abort_message = error[ABORT_KEY]
+    local co = coroutine.create(function(...)
+        xpcall(dlg, function(err)
+            if type(err) == 'table' then
+                local abort_message = err[ABORT_KEY]
                 if abort_message ~= nil then
                     if abort_message then
                         vim.api.nvim_err_writeln(abort_message)
@@ -19,15 +18,17 @@ function M.defer_to_coroutine(dlg, ...)
                     return
                 end
             end
-            if type(error) ~= 'string' then
-                error = vim.inspect(error)
+            if type(err) ~= 'string' then
+                err = vim.inspect(err)
             end
-            local traceback = debug.traceback(error, 2)
+            local traceback = debug.traceback(err, 2)
             traceback = string.gsub(traceback, '\t', string.rep(' ', 8))
-            vim.api.nvim_err_writeln(traceback)
-        end, unpack(args))
+            vim.notify(traceback, vim.log.levels.ERROR, {
+                title = 'ERROR in a "Days Without" related coroutine'
+            })
+        end, ...)
     end)
-    coroutine.resume(co)
+    coroutine.resume(co, ...)
     return co
 end
 
