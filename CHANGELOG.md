@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.3.0](https://github.com/idanarye/nvim-moonicipal/compare/v0.2.0...v0.3.0) (2024-03-28)
+
+
+### Features
+
+* `defer_to_coroutine` display error using `vim.notify` ([aca9e3c](https://github.com/idanarye/nvim-moonicipal/commit/aca9e3cc3f6b4b0eae9a1b3f5a2ba04ba74abb83))
+
+
+### Bug Fixes
+
+* Don't use `tbl_add_reverse_lookup` (will be deprecated in Neovim 0.10) ([a012961](https://github.com/idanarye/nvim-moonicipal/commit/a012961c026b019c158d11af157659900c203e0e))
+
 ## [0.2.0](https://github.com/idanarye/nvim-moonicipal/compare/v0.1.1...v0.2.0) (2023-11-01)
 
 
