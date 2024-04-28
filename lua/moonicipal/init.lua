@@ -86,10 +86,11 @@ end
 ---|moonicipal.merge_libs| (which joins multiple tasks libraries together).
 ---
 ---@generic L : MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
+---@param namespace string Prefix all tasks in the library with this namespace (separated with "::")
 ---@param lib L
 ---@return L # The tasks library passed to it, so that it can be used programmatically
-function M.include(lib)
-    return tasks_file.include(lib)
+function M.include(namespace, lib)
+    return tasks_file.include(namespace, lib)
 end
 
 ---Create a new tasks library.

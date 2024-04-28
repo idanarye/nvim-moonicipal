@@ -43,7 +43,7 @@ M.setup({config})                                             *moonicipal.setup*
         |MoonicipalSettings|
 
 
-M.include({lib})                                            *moonicipal.include*
+M.include({namespace}, {lib})                               *moonicipal.include*
     Include a tasks library.
 
     This function should only be used inside the tasks file, to add tasks
@@ -55,7 +55,8 @@ M.include({lib})                                            *moonicipal.include*
     @generic L : MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
 
     Parameters: ~
-        {lib}  (L)
+        {namespace}  (string)  Prefix all tasks in the library with this namespace (separated with "::")
+        {lib}        (L)
 
     Returns: ~
         (L)   The tasks library passed to it, so that it can be used programmatically

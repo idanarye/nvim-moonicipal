@@ -14,11 +14,26 @@ function M.registrar()
     }, MoonicipalRegistrar)
 end
 
-function M.include(lib)
-    if rawget(lib, 'tasks') then
-        table.insert(M.libraries, lib)
+function M.include(namespace, lib)
+    if lib ~= nil then
+        vim.validate {
+            namespace = {namespace, 'string'},
+            lib = {lib, {'table', 'function'}},
+        }
+        if M.libraries[namespace] then
+            error('Namespace "' .. namespace .. '" is already in use')
+        end
+        M.libraries[namespace] = lib
     else
-        vim.list_extend(M.libraries, lib)
+        lib = namespace
+        vim.validate {
+            lib = {lib, {'table', 'function'}},
+        }
+        if rawget(lib, 'tasks') then
+            table.insert(M.libraries, lib)
+        else
+            vim.list_extend(M.libraries, lib)
+        end
     end
     return lib
 end
@@ -48,6 +63,11 @@ function T:all_task_names()
     local task_names = vim.fn.copy(self.task_names_by_order)
     for _, lib in ipairs(self.libraries) do
         vim.list_extend(task_names, lib.task_names_by_order)
+    end
+    for namespace, lib in pairs(self.libraries) do
+        for _, task_name in ipairs(lib.task_names_by_order) do
+            table.insert(task_names, namespace .. '::' .. task_name)
+        end
     end
 
     local deduped = {}
@@ -96,16 +116,33 @@ function T:select_and_invoke()
     end)
 end
 
-function T:invoke(task_name)
-    local task = self.tasks[task_name]
-    if not task then
-        for _, library in ipairs(self.libraries) do
-            task = library.tasks[task_name]
-            if task then
-                break
-            end
+function T:get_task_by_name(task_name)
+    -- Get a task from the tasks file
+    if self.tasks[task_name] then
+        return self.tasks[task_name]
+    end
+
+    -- Get a task from the tasks library
+    for _, library in ipairs(self.libraries) do
+        if library.tasks[task_name] then
+            return library.tasks[task_name]
         end
     end
+
+    -- Get a namespaced task
+    local namespace, rest = task_name:match('^(%w+)::(.*)$')
+    if namespace then
+        local library = self.libraries[namespace]
+        if library then
+            return library[rest]
+        end
+    end
+
+    return nil
+end
+
+function T:invoke(task_name)
+    local task = self:get_task_by_name(task_name)
     if not task then
         vim.api.nvim_err_writeln('No such task ' .. vim.inspect(task_name))
         return
@@ -131,15 +168,7 @@ function M.open_for_edit(edit_cmd, file_name, task_name)
         local task = nil
         if not is_brand_new then
             local tasks_file = M.load(file_name)
-            task = tasks_file.tasks[task_name]
-            if task == nil then
-                for _, library in ipairs(tasks_file.libraries) do
-                    task = library.tasks[task_name]
-                    if task then
-                        break
-                    end
-                end
-            end
+            task = tasks_file:get_task_by_name(task_name)
         end
         if task == nil then
             local header = 'function T:' .. task_name .. '()'
