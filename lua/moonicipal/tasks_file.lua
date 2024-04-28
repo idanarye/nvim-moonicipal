@@ -65,8 +65,10 @@ function T:all_task_names()
         vim.list_extend(task_names, lib.task_names_by_order)
     end
     for namespace, lib in pairs(self.libraries) do
-        for _, task_name in ipairs(lib.task_names_by_order) do
-            table.insert(task_names, namespace .. '::' .. task_name)
+        if type(namespace) == 'string' then
+            for _, task_name in ipairs(lib.task_names_by_order) do
+                table.insert(task_names, namespace .. '::' .. task_name)
+            end
         end
     end
 
