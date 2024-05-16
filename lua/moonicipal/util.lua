@@ -35,7 +35,7 @@ end
 function M.resume_with(callback)
     local co = coroutine.running()
     local did_yield = false
-    local result = nil
+    local result
     callback(function(...)
         if did_yield then
             coroutine.resume(co, ...)
@@ -64,46 +64,12 @@ function M._resume_all_threads()
     end
 end
 
-local CTRL_V = vim.api.nvim_replace_termcodes('<C-v>', true, false, true)
-local CTRL_S = vim.api.nvim_replace_termcodes('<C-s>', true, false, true)
-
-local function get_keybind_prefix_for_running_command()
-    local mode = vim.fn.mode()
-    if mode == 'n' then
-        return ':'
-    elseif mode == 'i' or mode == 'R' then
-        return '<C-o>:'
-    elseif mode == 'v' or mode == 'V' or mode == CTRL_V then
-        return ':<C-u>'
-    elseif mode == 's' or mode == 'S' or mode == CTRL_S then
-        return '<C-o>:<C-u>'
-    elseif mode == 't' then
-        local buf_nr = vim.api.nvim_buf_get_number(0)
-        for _, chan in ipairs(vim.api.nvim_list_chans()) do
-            if chan.buffer == buf_nr then
-                return '<C-\\><C-o>:'
-            end
-        end
-        return ':'
-    elseif mode == 'c' or mode == 'r' then
-        return nil
-    end
-    error('Cannot fix echo from mode ' .. vim.inspect(mode))
-end
-
 local function resume_threads()
-    local prefix = get_keybind_prefix_for_running_command()
-    if prefix == nil then
-        if next(resumable_threads) ~= nil then
-            vim.defer_fn(resume_threads, 100)
-        end
-    else
-        prefix = vim.api.nvim_replace_termcodes(prefix, true, false, true)
-        local keycmd = 'lua require"moonicipal.util"._resume_all_threads()\n'
-        vim.api.nvim_feedkeys(prefix .. keycmd, 'ni', false)
-        if next(resumable_threads) ~= nil then
-            vim.defer_fn(resume_threads, 1)
-        end
+    local keycmd = '<Cmd>lua require"moonicipal.util"._resume_all_threads()<Cr>'
+    keycmd = vim.api.nvim_replace_termcodes(keycmd, true, false, true)
+    vim.api.nvim_feedkeys(keycmd, 'ni', false)
+    if next(resumable_threads) ~= nil then
+        vim.defer_fn(resume_threads, 1)
     end
 end
 
