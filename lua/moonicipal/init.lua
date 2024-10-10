@@ -79,6 +79,8 @@ end
 
 ---Include a tasks library.
 ---
+---Note: this is the old way. See |moonicipal.import| for the new way.
+---
 ---This function should only be used inside the tasks file, to add tasks
 ---libraries so  that their tasks could be invoked with |:MC|.
 ---
@@ -91,6 +93,58 @@ end
 ---@return L # The tasks library passed to it, so that it can be used programmatically
 function M.include(namespace, lib)
     return tasks_file.include(namespace, lib)
+end
+
+---Fields for the `opts` argument of |moonicipal.import|.
+---@class MoonicipalImportOptions
+---@field namespace? string Import the library into a namespace
+local MoonicipalImportOptions
+
+---Import a tasks library
+---
+---This function is supposed to replace |moonicipal.include| and works quite
+---differently.
+---
+---To import a library, feed it a function that returns two values - the task
+---object returned from |moonicipal.tasks_lib| (which should be called inside
+---that function) and as an optional second return value - a configuration
+---object.
+---
+---For example: if you have this in a file named "my_lib.lua"
+---
+---    local moonicipal = require'moonicipal'
+---
+---    return function()
+---        local L = moonicipal.tasks_lib()
+---        local cfg = {
+---            ---@type string
+---            main_file = nil,
+---        }
+---
+---        function L:run()
+---            vim.cmd('!python ' .. cfg.main_file)
+---        end
+---
+---        return L, cfg
+---    end
+---
+---You can load and configure this library with:
+---
+---    local L, cfg = moonicipal.import(require'my_lib')
+---
+---    cfg.main_file = 'main.py'
+---@generic L : MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
+---@generic C
+---@param lib_gen_function fun(): L, C
+---@param opts? MoonicipalImportOptions Options for the import itself
+function M.import(lib_gen_function, opts)
+    local lib, lib_config = lib_gen_function()
+    if opts and opts.namespace then
+        tasks_file.include(opts.namespace, lib)
+    else
+        tasks_file.include(lib)
+    end
+    return lib, lib_config
 end
 
 ---Create a new tasks library.

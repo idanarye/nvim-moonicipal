@@ -46,6 +46,8 @@ M.setup({config})                                             *moonicipal.setup*
 M.include({namespace}, {lib})                               *moonicipal.include*
     Include a tasks library.
 
+    Note: this is the old way. See |moonicipal.import| for the new way.
+
     This function should only be used inside the tasks file, to add tasks
     libraries so  that their tasks could be invoked with |:MC|.
 
@@ -60,6 +62,55 @@ M.include({namespace}, {lib})                               *moonicipal.include*
 
     Returns: ~
         (L)   The tasks library passed to it, so that it can be used programmatically
+
+
+MoonicipalImportOptions                                *MoonicipalImportOptions*
+    Fields for the `opts` argument of |moonicipal.import|.
+
+    Fields: ~
+        {namespace?}  (string)  Import the library into a namespace
+
+
+M.import({lib_gen_function}, {opts?})                        *moonicipal.import*
+    Import a tasks library
+
+    This function is supposed to replace |moonicipal.include| and works quite
+    differently.
+
+    To import a library, feed it a function that returns two values - the task
+    object returned from |moonicipal.tasks_lib| (which should be called inside
+    that function) and as an optional second return value - a configuration
+    object.
+
+    For example: if you have this in a file named "my_lib.lua"
+
+        local moonicipal = require'moonicipal'
+
+        return function()
+            local L = moonicipal.tasks_lib()
+            local cfg = {
+                ---@type string
+                main_file = nil,
+            }
+
+            function L:run()
+                vim.cmd('!python ' .. cfg.main_file)
+            end
+
+            return L, cfg
+        end
+
+    You can load and configure this library with:
+
+        local L, cfg = moonicipal.import(require'my_lib')
+
+        cfg.main_file = 'main.py'
+    @generic L : MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
+    @generic C
+
+    Parameters: ~
+        {lib_gen_function}  (fun():L,C)
+        {opts?}             (MoonicipalImportOptions)  Options for the import itself
 
 
 M.tasks_lib()                                             *moonicipal.tasks_lib*
