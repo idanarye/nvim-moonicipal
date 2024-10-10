@@ -132,7 +132,7 @@ function T:get_task_by_name(task_name)
     end
 
     -- Get a namespaced task
-    local namespace, rest = task_name:match('^(%w+)::(.*)$')
+    local namespace, rest = task_name:match('^([%w_-]+)::(.*)$')
     if namespace then
         local library = self.libraries[namespace]
         if library then
