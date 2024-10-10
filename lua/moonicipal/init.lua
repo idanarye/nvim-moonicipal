@@ -137,6 +137,7 @@ local MoonicipalImportOptions
 ---@generic C
 ---@param lib_gen_function fun(): L, C
 ---@param opts? MoonicipalImportOptions Options for the import itself
+---@return L, C
 function M.import(lib_gen_function, opts)
     local lib, lib_config = lib_gen_function()
     if opts and opts.namespace then
