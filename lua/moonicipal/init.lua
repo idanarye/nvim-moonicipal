@@ -86,7 +86,7 @@ end
 ---
 ---Task libraries can be defined with |moonicipal.tasks_lib| or with
 ---|moonicipal.merge_libs| (which joins multiple tasks libraries together).
----
+---@deprecated Use moonicipal.import instead
 ---@generic L : MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
 ---@param namespace string Prefix all tasks in the library with this namespace (separated with "::")
 ---@param lib L

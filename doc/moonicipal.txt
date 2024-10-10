@@ -53,7 +53,7 @@ M.include({namespace}, {lib})                               *moonicipal.include*
 
     Task libraries can be defined with |moonicipal.tasks_lib| or with
     |moonicipal.merge_libs| (which joins multiple tasks libraries together).
-
+    @deprecated Use moonicipal.import instead
     @generic L : MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
 
     Parameters: ~
@@ -111,6 +111,7 @@ M.import({lib_gen_function}, {opts?})                        *moonicipal.import*
     Parameters: ~
         {lib_gen_function}  (fun():L,C)
         {opts?}             (MoonicipalImportOptions)  Options for the import itself
+                                                       @return L, C
 
 
 M.tasks_lib()                                             *moonicipal.tasks_lib*
