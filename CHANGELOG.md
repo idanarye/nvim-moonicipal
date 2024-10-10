@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.3.0](https://github.com/idanarye/nvim-moonicipal/compare/v0.2.0...v0.3.0) (2024-10-10)
+
+
+### Features
+
+* `defer_to_coroutine` display error using `vim.notify` ([aca9e3c](https://github.com/idanarye/nvim-moonicipal/commit/aca9e3cc3f6b4b0eae9a1b3f5a2ba04ba74abb83))
+* Add `moonicipal.import` as a new way to import libraries ([081af03](https://github.com/idanarye/nvim-moonicipal/commit/081af035f2e4b3966a7a269c5b2537aee30d7498))
+* Add namespacing support for `moonicipal.include` ([947384c](https://github.com/idanarye/nvim-moonicipal/commit/947384c48194e878c68a94757b514ac1051d4184))
+
+
+### Bug Fixes
+
+* Don't use `tbl_add_reverse_lookup` (will be deprecated in Neovim 0.10) ([a012961](https://github.com/idanarye/nvim-moonicipal/commit/a012961c026b019c158d11af157659900c203e0e))
+* Make `fix_echo` use `&lt;Cmd&gt;` instead of trying to guess the mode and always run into edge cases ([5cdc596](https://github.com/idanarye/nvim-moonicipal/commit/5cdc5963ad9f4810261b8862518eb806750e213e))
+* Mark the `format` option of `cached_choice` as optional ([8b667f8](https://github.com/idanarye/nvim-moonicipal/commit/8b667f85790b8d3b5932ea3f2ef471d84caea46c))
+* Namespaces now support `_` and `-` ([fe23860](https://github.com/idanarye/nvim-moonicipal/commit/fe23860261da72818bf1e4493283f30b8730cbf9))
+
 ## [0.2.0](https://github.com/idanarye/nvim-moonicipal/compare/v0.1.1...v0.2.0) (2023-11-01)
 
 
