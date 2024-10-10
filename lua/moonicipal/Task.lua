@@ -216,7 +216,7 @@ end
 ---Mandatory. How to recognize the cached option.
 ---@field key MoonicipalOptionTransformer
 ---How to display the option in the selection UI.
----@field format MoonicipalOptionTransformer
+---@field format? MoonicipalOptionTransformer
 
 ---Let the user choose from several options, and use a cached result when the
 ---task is called as a dependency.
