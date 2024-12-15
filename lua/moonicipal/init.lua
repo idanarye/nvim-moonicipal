@@ -223,34 +223,12 @@ function M.input(opts)
     end)
 end
 
----@class MoonicipalSelectOptions
----@field prompt? string A prompt to display to the user when they select the option
----@field format? MoonicipalOptionTransformer How to display the options in the selection UI
-
 ---Use |vim.ui.select()| from a Lua coroutine, returning to the coroutine after
 ---the user selected an option.
 ---@param options any[] The options for the user to select from
 ---@param opts? MoonicipalSelectOptions
 function M.select(options, opts)
-    local new_opts = {}
-    if opts then
-        new_opts.prompt = opts.prompt
-        if opts.format then
-            new_opts.format_item = util.transformer_as_function(opts.format)
-        end
-    end
-    if new_opts.format_item == nil then
-        function new_opts.format_item(item)
-            if type(item) == 'string' then
-                return item
-            else
-                return vim.inspect(item)
-            end
-        end
-    end
-    return util.resume_with(function(resumer)
-        vim.ui.select(options, new_opts, resumer)
-    end)
+   return M.settings.selection(options, opts or {})
 end
 
 ---Abort the Moonicipal invocation.
