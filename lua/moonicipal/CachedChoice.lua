@@ -9,7 +9,7 @@ CachedChoice.__index = CachedChoice
 ---Add an option for the user to select.
 ---@param option any The options for the user to select
 function CachedChoice:__call(option)
-    table.insert(self, option)
+    table.insert(self.items, option)
 end
 
 ---Let the user choose using `moonicipal.selected`.
@@ -26,7 +26,7 @@ function CachedChoice:select()
     if not self.task:is_main() then
         local cached_key = self.task.cache[CachedChoice]
         if cached_key ~= nil then
-            for _, option in ipairs(self) do
+            for _, option in ipairs(self.items) do
                 if key_fn(option) == cached_key then
                     return option
                 end
@@ -34,7 +34,7 @@ function CachedChoice:select()
         end
     end
 
-    local chosen = require'moonicipal'.select(self, {
+    local chosen = require'moonicipal'.select(self.items, {
         format = self.format,
     })
     self.task.cache[CachedChoice] = key_fn(chosen)

@@ -45,6 +45,10 @@ function M.setup(config)
         M.settings[key] = value
     end
 
+    if type(M.settings.selection) == 'string' then
+        M.settings.selection = require(M.settings.selection)
+    end
+
     local function cmd_complete(arg_lead)
         return vim.tbl_filter(function(task_name)
             return vim.startswith(task_name, arg_lead)
@@ -225,8 +229,10 @@ end
 
 ---Use |vim.ui.select()| from a Lua coroutine, returning to the coroutine after
 ---the user selected an option.
----@param options any[] The options for the user to select from
+---@generic T
+---@param options MoonicipalSelectSource
 ---@param opts? MoonicipalSelectOptions
+---@return T
 function M.select(options, opts)
    return M.settings.selection(options, opts or {})
 end

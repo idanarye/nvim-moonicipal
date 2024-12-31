@@ -37,11 +37,11 @@ end
 ---list. This parameter controls how many tasks can be
 ---remembered. Defaults to 5.
 ---@field tasks_selection_lru_size? number
----@field selection?
+---@field selection? string | function
 local Settings = {
     file_prefix = '.' .. (os.getenv('USER') or os.getenv('USERNAME')),
     tasks_selection_lru_size = 5,
-    selection = require'moonicipal.selection.builtin',
+    selection = 'moonicipal.selection.builtin',
 }
 
 return Settings

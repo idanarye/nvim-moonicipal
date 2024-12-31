@@ -258,6 +258,7 @@ function MoonicipalTask:cached_choice(cfg)
     if cfg == nil then
         cfg = {}
     end
+    cfg.items = {}
     cfg.task = self
     return setmetatable(cfg, CachedChoice) --[[@as MoonicipalCachedChoice]]
 end
