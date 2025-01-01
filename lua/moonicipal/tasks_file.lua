@@ -95,7 +95,7 @@ function T:select_and_invoke()
     end)
     util.defer_to_coroutine(function()
         local task_name = require'moonicipal'.select(task_names, {
-            prompt = 'Choose task to run: ';
+            prompt = 'Choose task to run',
         })
         if not task_name then
             return

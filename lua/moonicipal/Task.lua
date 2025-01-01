@@ -37,7 +37,7 @@ end
 ---
 ---    function T:dependency()
 ---        return self:cache_result(function()
----            return moonicipal.input { prompt = "Enter text: " }
+---            return moonicipal.input { prompt = "Enter text" }
 ---        end)
 ---    end
 ---

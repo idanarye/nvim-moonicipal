@@ -1,7 +1,3 @@
-if true then
-    return
-end
-
 ---@generic T
 ---@alias MoonicipalSelectSource T[] | { [string]: T } | fun(cb: fun(item: T))
 
@@ -45,6 +41,7 @@ local M = {}
 ---When using the second style, the value is used to configure the specific
 ---action (see |MoonicipalSelectActionOptions|)
 ---@field actions? (string[] | {[string]: MoonicipalSelectActionOptions})
+M.MoonicipalSelectOptions = {}
 
 ---@class MoonicipalSelectActionOptions
 ---Override the `multi` field from |MoonicipalSelectOptions| only for this
@@ -52,5 +49,6 @@ local M = {}
 ---@field multi? boolean
 ---Instead of the chosen item(s), return the text the user wrote in the query.
 ---@field query? boolean
+M.MoonicipalSelectActionOptions = {}
 
 return M
