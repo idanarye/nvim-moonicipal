@@ -12,6 +12,9 @@ local function tagged_items_register_and_fetch(formatter)
     end
 
     local function fetch(formatted)
+        if formatted == nil then
+            return nil
+        end
         local tag = vim.gsplit(formatted, '\t', {plain = true})()
         local index = tonumber(tag)
         return items[index]

@@ -106,7 +106,7 @@ return function(options, opts)
                                 return
                             end
                         end
-                        local chosen = require'telescope.actions.state'.get_selected_entry()
+                        local chosen = require'telescope.actions.state'.get_selected_entry() or {}
                         require'telescope.actions'.close(bufnr)
                         if action_opts.multi then
                             resumer({chosen.value}, return_marker)

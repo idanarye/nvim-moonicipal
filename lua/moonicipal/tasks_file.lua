@@ -51,7 +51,12 @@ function M.load(path)
     M.tasks = tasks
     M.task_names_by_order = task_names_by_order
     M.libraries = libraries
-    dofile(path)
+    local file_runner, err = loadfile(path)
+    if file_runner then
+        file_runner()
+    elseif not vim.endswith(err, 'No such file or directory') then
+        error(err)
+    end
     M.tasks = nil
     M.task_names_by_order = nil
     return vim.tbl_extend('error', T, {
