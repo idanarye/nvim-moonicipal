@@ -61,6 +61,12 @@ return function(options, opts)
         end
     end
 
+    if opts.preview then
+        new_opts.preview = function(item)
+            return opts.preview(util.default_transformer(fetch(item[1])))
+        end
+    end
+
     return util.resume_with(function(resumer)
         new_opts.actions = {
             default = function(result)

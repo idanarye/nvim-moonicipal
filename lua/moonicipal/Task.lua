@@ -217,6 +217,8 @@ end
 ---@field key MoonicipalOptionTransformer
 ---How to display the option in the selection UI.
 ---@field format? MoonicipalOptionTransformer
+---Previewer for the option in the selection UI.
+---@field preview? fun(item: any): (string | string[])
 
 ---Let the user choose from several options, and use a cached result when the
 ---task is called as a dependency.

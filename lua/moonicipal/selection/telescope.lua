@@ -49,9 +49,41 @@ return function(options, opts)
         end
     end
 
+    local function normalize_lines_list(source)
+        if source == nil then
+            return {}
+        elseif (getmetatable(source) or {}).__tostring then
+            return vim.split(tostring(source), '\n', {plain = true})
+        elseif type(source) == 'string' then
+            return vim.split(source, '\n', {plain = true})
+        elseif vim.islist(source) and vim.iter(source):all(function(entry)
+            return type(entry) == 'string'
+        end)
+        then
+            return vim.iter(source):map(function(entry)
+                return vim.split(entry, '\n', {plain = true})
+            end)
+            :flatten()
+            :totable()
+        else
+            return vim.split(vim.inspect(source), '\n', {plain = true})
+        end
+    end
+
+    local previewer
+    if opts.preview then
+        previewer = require'telescope.previewers'.new_buffer_previewer {
+            define_preview = function(self, item)
+                local preview = normalize_lines_list(opts.preview(item.value))
+                vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, true, preview)
+            end,
+        }
+    end
+
     return util.resume_with(function(resumer)
         require'telescope.pickers'.new({}, {
             finder = finder,
+            previewer = previewer,
             attach_mappings = function()
                 require'telescope.actions'.select_default:replace(function(bufnr)
                     if opts.multi then
