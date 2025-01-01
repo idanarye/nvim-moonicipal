@@ -27,7 +27,7 @@ FEATURES (IMPLEMENTED/PLANNED)
 * [x] Tasks run in coroutines.
 * [x] Helpers for writing async tasks.
 * [x] Utilities for caching user selections.
-* [ ] Support setting up custom selection UI, for utilizing the full power of FZF/Telescope.
+* [x] Support setting up custom selection UI, for utilizing the full power of FZF/Telescope.
 * [ ] Use custom selection UI for rich `:MC` selection menu, where e.g. keymaps can be used to edit tasks instead of running them.
 * [ ] Customizing the tasks file template.
 * [ ] null-ls source with customizable code actions for creating commonly used tasks.
@@ -41,6 +41,11 @@ Install Moonicipal with your plugin manager of choice, and add this to your `ini
 ```lua
 require'moonicipal'.setup {
     file_prefix = '.my-username',
+
+    -- Choose one of these, according to the one you use. Or don't set it and
+    -- default to the less powerful `vim.ui.select()`.
+    selection = 'moonicipal.selection.fzf-lua',
+    selection = 'moonicipal.selection.telescope',
 }
 ```
 

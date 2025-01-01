@@ -4,6 +4,11 @@
 --->
 ---    require'moonicipal'.setup {
 ---        file_prefix = '.my-username',
+---
+---        -- Choose one of these, according to the one you use. Or don't set it and
+---        -- default to the less powerful `vim.ui.select()`.
+---        selection = 'moonicipal.selection.fzf-lua',
+---        selection = 'moonicipal.selection.telescope',
 ---    }
 ---<
 ---`file_prefix` is optional - if left unset, Moonicipal will set it using the

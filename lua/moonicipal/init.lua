@@ -234,6 +234,7 @@ end
 ---@param options MoonicipalSelectSource
 ---@param opts? MoonicipalSelectOptions
 ---@return T
+---@return string?
 function M.select(options, opts)
    return M.settings.selection(options, opts or {})
 end

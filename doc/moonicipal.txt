@@ -529,8 +529,9 @@ MoonicipalTask:cached_data_cell({opts})        *MoonicipalTask:cached_data_cell*
 MoonicipalCachedChoiceConfiguration        *MoonicipalCachedChoiceConfiguration*
 
     Fields: ~
-        {key}      (MoonicipalOptionTransformer)  Mandatory. How to recognize the cached option.
-        {format?}  (MoonicipalOptionTransformer)  How to display the option in the selection UI.
+        {key}       (MoonicipalOptionTransformer)    Mandatory. How to recognize the cached option.
+        {format?}   (MoonicipalOptionTransformer)    How to display the option in the selection UI.
+        {preview?}  (fun(item:any):string|string[])  Previewer for the option in the selection UI.
 
 
 MoonicipalTask:cached_choice({cfg?})              *MoonicipalTask:cached_choice*
@@ -600,6 +601,58 @@ CachedChoice:select()                                      *CachedChoice:select*
 
     Returns: ~
         (any)   The chosen option
+
+
+MoonicipalSelectSource                                  *MoonicipalSelectSource*
+    @generic T
+
+    Type: ~
+        T[]|
+
+
+MoonicipalSelectOptions                                *MoonicipalSelectOptions*
+
+    Fields: ~
+        {prompt?}   (string)                         A prompt to display to the user when they select the option.
+        {format?}   (MoonicipalOptionTransformer)    How to display the options in the selection UI.
+        {multi?}    (boolean)                        Select multiple items. Setting this to `true` will make |moonicipal.select|
+                                                     return a list - even if only one item is selected.
+
+                                                     This, of course, does not work for backends that don't support multiple
+                                                     selection (like the builtin |vim.ui.select()|), and they'll still allow to
+                                                     select only one item, but if `multi` is set to `true` that one item will
+                                                     still get wrapped in a list.
+        {preview?}  (fun(item:any):string|string[])  Show a preview for the item under the cursor.
+        {actions?}  ()                               Add actions - keymaps that can be used to finalize the selection instead of
+                                                     Enter. When such a key is used, its string is returned as the second return
+                                                     value.
+
+                                                     The syntax for special keys is always Vim's syntax (e.g. `<C-r>`). Even when
+                                                     the backend uses a different sytnax (e.g. fzf-lua), one should still use
+                                                     Vim's sytnax and let the interaction function do the translation. The string
+                                                     returned in the second return value will still be the exact same string
+                                                     passed to `actions` - the translation is transparent to the user.
+
+                                                     The keycodes can be passed as either list items or dictionary keys - and
+                                                     both styles can be mixed in the same table:
+                                                     ```
+                                                     moonicipal.select({ ... }, {
+                                                         actions = {
+                                                             '<M-a>',
+                                                             ['<M-a>'] = {},
+                                                         },
+                                                     })
+                                                     ```
+                                                     When using the second style, the value is used to configure the specific
+                                                     action (see |MoonicipalSelectActionOptions|)
+
+
+MoonicipalSelectActionOptions                    *MoonicipalSelectActionOptions*
+
+    Fields: ~
+        {multi?}  (boolean)  Override the `multi` field from |MoonicipalSelectOptions| only for this
+                             action.
+        {query?}  (boolean)  Instead of the chosen item(s), return the text the user wrote in the query.
 
 
 vim:tw=78:ts=8:noet:ft=help:norl:
