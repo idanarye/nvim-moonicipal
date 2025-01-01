@@ -1,4 +1,5 @@
 local util = require'moonicipal.util'
+local selection_util = require'moonicipal.selection.util'
 
 ---@param options MoonicipalSelectSource The options for the user to select from
 ---@param opts MoonicipalSelectOptions
@@ -29,15 +30,17 @@ return function(options, opts)
         end
     end
 
-    local register, fetch = require'moonicipal.selection.util'.tagged_items_register_and_fetch(format_item)
+    local register, fetch = selection_util.tagged_items_register_and_fetch(format_item)
 
     local new_options
     if vim.is_callable(options) then
         function new_options(cb)
-            options(function(value)
-                cb(register(value))
+            util.defer_to_coroutine(function()
+                options(function(value)
+                    cb(register(value))
+                end)
+                cb()
             end)
-            cb()
         end
     elseif type(options) == 'table' then
         if vim.islist(options) then
@@ -52,7 +55,7 @@ return function(options, opts)
         end
     end
 
-    return require'moonicipal.util'.resume_with(function(resumer)
+    return util.resume_with(function(resumer)
         new_opts.actions = {
             default = function(result)
                 if opts.multi then
