@@ -83,28 +83,49 @@ return function(options, opts)
     return util.resume_with(function(resumer)
         require'telescope.pickers'.new({}, {
             finder = finder,
+            sorter = require'telescope.config'.values.generic_sorter{},
             previewer = previewer,
-            attach_mappings = function()
-                require'telescope.actions'.select_default:replace(function(bufnr)
-                    if opts.multi then
-                        local picker = require'telescope.actions.state'.get_current_picker(bufnr)
-                        local chosens = picker:get_multi_selection()
-                        if next(chosens) ~= nil then
-                            resumer(vim.tbl_map(function(item)
-                                return item.value
-                            end, chosens))
+            attach_mappings = function(_, map_action)
+                local function gen_action(return_marker, action_opts)
+                    action_opts = vim.tbl_extend('keep', action_opts, {multi = opts.multi})
+                    return function(bufnr)
+                        if action_opts.query then
+                            local query_text = require'telescope.actions.state'.get_current_line()
                             require'telescope.actions'.close(bufnr)
+                            resumer(query_text, return_marker)
                             return
                         end
+
+                        if action_opts.multi then
+                            local picker = require'telescope.actions.state'.get_current_picker(bufnr)
+                            local chosens = picker:get_multi_selection()
+                            if next(chosens) ~= nil then
+                                resumer(vim.tbl_map(function(item)
+                                    return item.value
+                                end, chosens))
+                                require'telescope.actions'.close(bufnr)
+                                return
+                            end
+                        end
+                        local chosen = require'telescope.actions.state'.get_selected_entry()
+                        require'telescope.actions'.close(bufnr)
+                        if action_opts.multi then
+                            resumer({chosen.value}, return_marker)
+                        else
+                            resumer(chosen.value, return_marker)
+                        end
                     end
-                    local chosen = require'telescope.actions.state'.get_selected_entry()
-                    require'telescope.actions'.close(bufnr)
-                    if opts.multi then
-                        resumer({chosen.value})
+                end
+                require'telescope.actions'.select_default:replace(gen_action(nil, {}))
+
+                for k, v in pairs(opts.actions or {}) do
+                    if type(k) == 'number' then
+                        map_action({'n', 'i'}, v, gen_action(v, {}))
                     else
-                        resumer(chosen.value)
+                        map_action({'n', 'i'}, k, gen_action(k, v))
                     end
-                end)
+                end
+
                 return true
             end,
         }):find()
