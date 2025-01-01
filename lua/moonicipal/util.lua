@@ -92,9 +92,21 @@ end
 ---| string[]
 ---| fun(value:any):string
 
+function M.default_transformer(item)
+    if (getmetatable(item) or {}).__tostring then
+        return tostring(item)
+    elseif type(item) == 'string' then
+        return item
+    else
+        return vim.inspect(item)
+    end
+end
+
 ---@param transformer MoonicipalOptionTransformer
 function M.transformer_as_function(transformer)
-    if type(transformer) == 'string' then
+    if transformer == nil then
+        return M.default_transformer
+    elseif type(transformer) == 'string' then
         return function(item)
             return item[transformer]
         end

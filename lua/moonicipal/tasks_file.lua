@@ -94,11 +94,9 @@ function T:select_and_invoke()
         return (order[b] or 0) - (order[a] or 0)
     end)
     util.defer_to_coroutine(function()
-        local task_name = util.resume_with(function(resumer)
-            vim.ui.select(task_names, {
-                prompt = 'Choose task to run: ';
-            }, resumer)
-        end)
+        local task_name = require'moonicipal'.select(task_names, {
+            prompt = 'Choose task to run: ';
+        })
         if not task_name then
             return
         end

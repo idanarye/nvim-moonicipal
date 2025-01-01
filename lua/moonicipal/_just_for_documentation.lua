@@ -4,6 +4,11 @@
 --->
 ---    require'moonicipal'.setup {
 ---        file_prefix = '.my-username',
+---
+---        -- Choose one of these, according to the one you use. Or don't set it and
+---        -- default to the less powerful `vim.ui.select()`.
+---        selection = 'moonicipal.selection.fzf-lua',
+---        selection = 'moonicipal.selection.telescope',
 ---    }
 ---<
 ---`file_prefix` is optional - if left unset, Moonicipal will set it using the
@@ -47,7 +52,7 @@
 ---@brief [[
 ---The `:MC` command invokes tasks. Given a task name as argument, it invokes
 ---the task with that name. When used without arguments, it uses
----|vim.ui.select()| to prompt you to choose a task, and then runs that task.
+---|moonicipal.select| to prompt you to choose a task, and then runs that task.
 ---@brief ]]
 
 ---@tag :MCedit
