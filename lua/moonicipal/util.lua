@@ -93,7 +93,9 @@ end
 ---| fun(value:any):string
 
 function M.default_transformer(item)
-    if type(item) == 'string' then
+    if (getmetatable(item) or {}).__tostring then
+        return tostring(item)
+    elseif type(item) == 'string' then
         return item
     else
         return vim.inspect(item)

@@ -10,7 +10,7 @@ return function(options, opts)
         local formatted = format_item(item)
         return {
             value = item,
-            display = formatted,
+            display = string.gsub(formatted, '\n', ' '),
             ordinal = formatted,
         }
     end

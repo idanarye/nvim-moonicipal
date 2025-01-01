@@ -3,9 +3,13 @@ local util = require'moonicipal.util'
 ---@param options MoonicipalSelectSource The options for the user to select from
 ---@param opts MoonicipalSelectOptions
 return function(options, opts)
+    local format_item = util.transformer_as_function(opts.format)
     local new_opts = {
         prompt = opts.prompt,
-        format_item = util.transformer_as_function(opts.format),
+        format_item = function(item)
+            -- Multilines may not be supported by the backend
+            return string.gsub(format_item(item), '\n', ' ')
+        end
     }
 
     local new_options
