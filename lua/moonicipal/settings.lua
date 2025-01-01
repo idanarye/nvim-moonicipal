@@ -45,10 +45,23 @@ end
 ---also available out of the box (as long as the respective backend plugin is
 ---installed).
 ---@field selection? string | function
+---Keymaps for the tasks selection UI (|:MC| without argument). The key is the
+---action name and the value is a Vim style keymap for triggering it:
+---
+---* `add` - ignore the selection and add a task named after the current query.
+---  Defaults to `<M-a>`. Note that this works like |:MCedit| - if the task
+---  already exists it'll edit it instead of creating a new one. 
+---* `edit` - edit the currently highlighted task. Defaults to `<M-e>`.
+---@field task_actions table<string, string>
 local Settings = {
     file_prefix = '.' .. (os.getenv('USER') or os.getenv('USERNAME')),
     tasks_selection_lru_size = 5,
     selection = 'moonicipal.selection.builtin',
+
+    task_actions = {
+        add = '<M-a>',
+        edit = '<M-e>',
+    },
 }
 
 return Settings

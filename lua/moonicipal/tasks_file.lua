@@ -4,6 +4,10 @@ local MoonicipalRegistrar = require'moonicipal.Registrar'
 
 local M = {}
 
+function M.get_file_name()
+    return require'moonicipal.settings'.file_prefix .. '.moonicipal.lua'
+end
+
 function M.registrar()
     if type(M.tasks) ~= 'table' then
         error('registrar called not from tasks file')
@@ -94,10 +98,32 @@ function T:select_and_invoke()
         return (order[b] or 0) - (order[a] or 0)
     end)
     util.defer_to_coroutine(function()
-        local task_name = require'moonicipal'.select(task_names, {
+        local task_actions = require'moonicipal.settings'.task_actions
+        local actions = {}
+        if task_actions.add then
+            actions[task_actions.add] = {query = true}
+        end
+        if task_actions.edit then
+            actions[task_actions.edit] = {}
+        end
+        local task_name, action = require'moonicipal'.select(task_names, {
             prompt = 'Choose task to run',
+            actions = actions,
         })
         if not task_name then
+            return
+        end
+        --NOTE: `add` and `edit` do the same thing, the only difference is that
+        --`add` uses the query and `edit` the selection.
+        if action == task_actions.add then
+            if task_name == '' then
+                vim.notify('Cannot add an empty action')
+                return
+            end
+            M.open_for_edit('edit', M.get_file_name(), task_name)
+            return
+        elseif action == task_actions.edit then
+            M.open_for_edit('edit', M.get_file_name(), task_name)
             return
         end
         local old_index = 1 + vim.fn.index(selection_lru, task_name)

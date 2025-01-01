@@ -317,20 +317,27 @@ MoonicipalSettings                                          *MoonicipalSettings*
     Settings for |moonicipal.setup|.
 
     Fields: ~
-        {file_prefix?}               (string)           A prefix for the name of the Moonicipal tasks file.
-                                                        The tasks file will end up being named
-                                                        "`<file_prefix>.moonicipal.lua`". Defaults to `.$USER`.
-        {tasks_selection_lru_size?}  (number)           |:MC| without argument will remember the last tasks
-                                                        the user has chosen and put them at the start of the
-                                                        list. This parameter controls how many tasks can be
-                                                        remembered. Defaults to 5.
-        {selection?}                 (string|function)  The selection UI used by |moonicipal.select| - which means it'll also be
-                                                        used by other Moonicipal facilities like |:MC| or
-                                                        |MoonicipalTask:cached_choice|.
-                                                        Defaults to "moonicipal.selection.builtin", which uses |vim.ui.select()|,
-                                                        but "moonicipal.selection.fzf-lua" and "moonicipal.selection.telescope" are
-                                                        also available out of the box (as long as the respective backend plugin is
-                                                        installed).
+        {file_prefix?}               (string)                A prefix for the name of the Moonicipal tasks file.
+                                                             The tasks file will end up being named
+                                                             "`<file_prefix>.moonicipal.lua`". Defaults to `.$USER`.
+        {tasks_selection_lru_size?}  (number)                |:MC| without argument will remember the last tasks
+                                                             the user has chosen and put them at the start of the
+                                                             list. This parameter controls how many tasks can be
+                                                             remembered. Defaults to 5.
+        {selection?}                 (string|function)       The selection UI used by |moonicipal.select| - which means it'll also be
+                                                             used by other Moonicipal facilities like |:MC| or
+                                                             |MoonicipalTask:cached_choice|.
+                                                             Defaults to "moonicipal.selection.builtin", which uses |vim.ui.select()|,
+                                                             but "moonicipal.selection.fzf-lua" and "moonicipal.selection.telescope" are
+                                                             also available out of the box (as long as the respective backend plugin is
+                                                             installed).
+        {task_actions}               (table<string,string>)  Keymaps for the tasks selection UI (|:MC| without argument). The key is the
+                                                             action name and the value is a Vim style keymap for triggering it:
+
+                                                             * `add` - ignore the selection and add a task named after the current query.
+                                                               Defaults to `<M-a>`. Note that this works like |:MCedit| - if the task
+                                                               already exists it'll edit it instead of creating a new one.
+                                                             * `edit` - edit the currently highlighted task. Defaults to `<M-e>`.
 
 
 MoonicipalRegistrar                                        *MoonicipalRegistrar*

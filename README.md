@@ -28,7 +28,7 @@ FEATURES (IMPLEMENTED/PLANNED)
 * [x] Helpers for writing async tasks.
 * [x] Utilities for caching user selections.
 * [x] Support setting up custom selection UI, for utilizing the full power of FZF/Telescope.
-* [ ] Use custom selection UI for rich `:MC` selection menu, where e.g. keymaps can be used to edit tasks instead of running them.
+* [x] Use custom selection UI for rich `:MC` selection menu, where e.g. keymaps can be used to edit tasks instead of running them.
 * [ ] Customizing the tasks file template.
 * [ ] null-ls source with customizable code actions for creating commonly used tasks.
 * [ ] Allow writing the tasks file in Fennel (and other Lua based languages?)

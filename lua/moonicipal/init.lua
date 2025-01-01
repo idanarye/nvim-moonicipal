@@ -33,10 +33,6 @@ local tasks_lib = require'moonicipal.tasks_lib'
 
 M.settings = require'moonicipal.settings'
 
-local function get_file_name()
-    return M.settings.file_prefix .. '.moonicipal.lua'
-end
-
 ---Configure Moonicipal and create the Vim commands.
 ---@param config MoonicipalSettings
 ---@see MoonicipalSettings
@@ -66,7 +62,7 @@ function M.setup(config)
     -- These are all temporary. Will be replaced with more proper solution
     local function define_edit_function(cmd_name, edit_cmd)
         vim.api.nvim_create_user_command(cmd_name, function(ctx)
-            tasks_file.open_for_edit(edit_cmd, get_file_name(), unpack(ctx.fargs))
+            tasks_file.open_for_edit(edit_cmd, tasks_file.get_file_name(), unpack(ctx.fargs))
         end, { nargs = '?', complete = cmd_complete })
     end
     define_edit_function('MCedit', 'edit')
@@ -204,7 +200,7 @@ end
 
 ---@private
 function M.read_task_file()
-    return tasks_file.load(get_file_name())
+    return tasks_file.load(tasks_file.get_file_name())
 end
 
 ---Fields for the `opts` argument of |moonicipal.input|.
