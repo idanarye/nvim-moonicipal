@@ -227,8 +227,9 @@ function M.input(opts)
     end)
 end
 
----Use |vim.ui.select()| from a Lua coroutine, returning to the coroutine after
----the user selected an option.
+---Use a selection UI (configured by the `selection` field of
+---|MoonicipalSettings|, defaults to |vim.ui.select()|) from a Lua coroutine,
+---returning to the coroutine after the user selected an option.
 ---@generic T
 ---@param options MoonicipalSelectSource
 ---@param opts? MoonicipalSelectOptions

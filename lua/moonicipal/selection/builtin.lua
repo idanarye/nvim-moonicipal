@@ -3,20 +3,10 @@ local util = require'moonicipal.util'
 ---@param options MoonicipalSelectSource The options for the user to select from
 ---@param opts MoonicipalSelectOptions
 return function(options, opts)
-    local new_opts = {}
-    new_opts.prompt = opts.prompt
-    if opts.format then
-        new_opts.format_item = util.transformer_as_function(opts.format)
-    end
-    if new_opts.format_item == nil then
-        function new_opts.format_item(item)
-            if type(item) == 'string' then
-                return item
-            else
-                return vim.inspect(item)
-            end
-        end
-    end
+    local new_opts = {
+        prompt = opts.prompt,
+        format_item = util.transformer_as_function(opts.format),
+    }
 
     local new_options
     if vim.is_callable(options) then

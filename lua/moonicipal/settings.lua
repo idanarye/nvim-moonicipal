@@ -37,6 +37,13 @@ end
 ---list. This parameter controls how many tasks can be
 ---remembered. Defaults to 5.
 ---@field tasks_selection_lru_size? number
+---The selection UI used by |moonicipal.select| - which means it'll also be
+---used by other Moonicipal facilities like |:MC| or
+---|MoonicipalTask:cached_choice|.
+---Defaults to "moonicipal.selection.builtin", which uses |vim.ui.select()|,
+---but "moonicipal.selection.fzf-lua" and "moonicipal.selection.telescope" are
+---also available out of the box (as long as the respective backend plugin is
+---installed).
 ---@field selection? string | function
 local Settings = {
     file_prefix = '.' .. (os.getenv('USER') or os.getenv('USERNAME')),

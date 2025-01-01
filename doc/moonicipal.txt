@@ -177,20 +177,18 @@ M.input({opts?})                                              *moonicipal.input*
         (string|nil)   The text entered by the user
 
 
-MoonicipalSelectOptions                                *MoonicipalSelectOptions*
-
-    Fields: ~
-        {prompt?}  (string)                       A prompt to display to the user when they select the option
-        {format?}  (MoonicipalOptionTransformer)  How to display the options in the selection UI
-
-
 M.select({options}, {opts?})                                 *moonicipal.select*
-    Use |vim.ui.select()| from a Lua coroutine, returning to the coroutine after
-    the user selected an option.
+    Use a selection UI (configured by the `selection` field of
+    |MoonicipalSettings|, defaults to |vim.ui.select()|) from a Lua coroutine,
+    returning to the coroutine after the user selected an option.
+    @generic T
 
     Parameters: ~
-        {options}  (any[])                    The options for the user to select from
+        {options}  (MoonicipalSelectSource)
         {opts?}    (MoonicipalSelectOptions)
+
+    Returns: ~
+        (T)
 
 
 M.abort()                                                     *moonicipal.abort*
@@ -290,7 +288,7 @@ called (see |moonicipal-setup|)
                                                                            *:MC*
 The `:MC` command invokes tasks. Given a task name as argument, it invokes
 the task with that name. When used without arguments, it uses
-|vim.ui.select()| to prompt you to choose a task, and then runs that task.
+|moonicipal.select| to prompt you to choose a task, and then runs that task.
 
                                                                        *:MCedit*
 The `:MCedit` command opens the tasks file for editing. If there is no task
@@ -314,13 +312,20 @@ MoonicipalSettings                                          *MoonicipalSettings*
     Settings for |moonicipal.setup|.
 
     Fields: ~
-        {file_prefix?}               (string)  A prefix for the name of the Moonicipal tasks file.
-                                               The tasks file will end up being named
-                                               "`<file_prefix>.moonicipal.lua`". Defaults to `.$USER`.
-        {tasks_selection_lru_size?}  (number)  |:MC| without argument will remember the last tasks
-                                               the user has chosen and put them at the start of the
-                                               list. This parameter controls how many tasks can be
-                                               remembered. Defaults to 5.
+        {file_prefix?}               (string)           A prefix for the name of the Moonicipal tasks file.
+                                                        The tasks file will end up being named
+                                                        "`<file_prefix>.moonicipal.lua`". Defaults to `.$USER`.
+        {tasks_selection_lru_size?}  (number)           |:MC| without argument will remember the last tasks
+                                                        the user has chosen and put them at the start of the
+                                                        list. This parameter controls how many tasks can be
+                                                        remembered. Defaults to 5.
+        {selection?}                 (string|function)  The selection UI used by |moonicipal.select| - which means it'll also be
+                                                        used by other Moonicipal facilities like |:MC| or
+                                                        |MoonicipalTask:cached_choice|.
+                                                        Defaults to "moonicipal.selection.builtin", which uses |vim.ui.select()|,
+                                                        but "moonicipal.selection.fzf-lua" and "moonicipal.selection.telescope" are
+                                                        also available out of the box (as long as the respective backend plugin is
+                                                        installed).
 
 
 MoonicipalRegistrar                                        *MoonicipalRegistrar*
@@ -524,8 +529,8 @@ MoonicipalTask:cached_data_cell({opts})        *MoonicipalTask:cached_data_cell*
 MoonicipalCachedChoiceConfiguration        *MoonicipalCachedChoiceConfiguration*
 
     Fields: ~
-        {key}     (MoonicipalOptionTransformer)  Mandatory. How to recognize the cached option.
-        {format}  (MoonicipalOptionTransformer)  How to display the option in the selection UI.
+        {key}      (MoonicipalOptionTransformer)  Mandatory. How to recognize the cached option.
+        {format?}  (MoonicipalOptionTransformer)  How to display the option in the selection UI.
 
 
 MoonicipalTask:cached_choice({cfg?})              *MoonicipalTask:cached_choice*

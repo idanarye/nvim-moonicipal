@@ -5,12 +5,7 @@ local util = require'moonicipal.util'
 return function(options, opts)
     -- TODO: deal with multi
 
-    local format_item
-    if opts.format then
-        format_item = util.transformer_as_function(opts.format)
-    else
-        format_item = vim.inspect
-    end
+    local format_item = util.transformer_as_function(opts.format)
     local function entry_maker(item)
         local formatted = format_item(item)
         return {
@@ -62,10 +57,6 @@ return function(options, opts)
                     if opts.multi then
                         local picker = require'telescope.actions.state'.get_current_picker(bufnr)
                         local chosens = picker:get_multi_selection()
-                        --vim.notify(vim.inspect {
-                            --chosens = chosens,
-                            --is_not_nil = next(chosens) ~= nil,
-                        --})
                         if next(chosens) ~= nil then
                             resumer(vim.tbl_map(function(item)
                                 return item.value

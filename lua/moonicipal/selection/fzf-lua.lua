@@ -1,36 +1,42 @@
 local util = require'moonicipal.util'
-local selection_util = require'moonicipal.selection.util'
+
+local function tagged_items_register_and_fetch(formatter)
+    local len = 0
+    local items = {}
+
+    local function register(item)
+        local formatted = formatter(item)
+        len = len + 1
+        items[len] = item
+        return ('%d\t%s'):format(len, formatted)
+    end
+
+    local function fetch(formatted)
+        local tag = vim.gsplit(formatted, '\t', {plain = true})()
+        local index = tonumber(tag)
+        return items[index]
+    end
+
+    return register, fetch
+end
 
 ---@param options MoonicipalSelectSource The options for the user to select from
 ---@param opts MoonicipalSelectOptions
 return function(options, opts)
     local new_opts = {
+        prompt = opts.prompt,
         fzf_opts = {
             ['--with-nth'] = '2..',
             ['--delimiter'] = '\t',
-        }
+        },
     }
-    new_opts.prompt = opts.prompt
 
     if opts.multi then
         new_opts.fzf_opts['--multi'] = true
     end
 
-    local format_item
-    if opts.format then
-        format_item = util.transformer_as_function(opts.format)
-    end
-    if format_item == nil then
-        function format_item(item)
-            if type(item) == 'string' then
-                return item
-            else
-                return vim.inspect(item)
-            end
-        end
-    end
-
-    local register, fetch = selection_util.tagged_items_register_and_fetch(format_item)
+    local format_item = util.transformer_as_function(opts.format)
+    local register, fetch = tagged_items_register_and_fetch(format_item)
 
     local new_options
     if vim.is_callable(options) then

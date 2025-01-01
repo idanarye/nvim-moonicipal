@@ -47,7 +47,7 @@
 ---@brief [[
 ---The `:MC` command invokes tasks. Given a task name as argument, it invokes
 ---the task with that name. When used without arguments, it uses
----|vim.ui.select()| to prompt you to choose a task, and then runs that task.
+---|moonicipal.select| to prompt you to choose a task, and then runs that task.
 ---@brief ]]
 
 ---@tag :MCedit
