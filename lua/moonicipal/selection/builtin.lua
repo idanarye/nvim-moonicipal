@@ -5,12 +5,14 @@ local util = require'moonicipal.util'
 return function(options, opts)
     local format_item = util.transformer_as_function(opts.format)
     local new_opts = {
-        prompt = opts.prompt,
         format_item = function(item)
             -- Multilines may not be supported by the backend
             return string.gsub(format_item(item), '\n', ' ')
         end
     }
+    if opts.prompt then
+        new_opts.prompt = opts.prompt .. '> '
+    end
 
     local new_options
     if vim.is_callable(options) then

@@ -3,8 +3,6 @@ local util = require'moonicipal.util'
 ---@param options MoonicipalSelectSource The options for the user to select from
 ---@param opts MoonicipalSelectOptions
 return function(options, opts)
-    -- TODO: deal with multi
-
     local format_item = util.transformer_as_function(opts.format)
     local function entry_maker(item)
         local formatted = format_item(item)
@@ -82,6 +80,7 @@ return function(options, opts)
 
     return util.resume_with(function(resumer)
         require'telescope.pickers'.new({}, {
+            prompt_title = opts.prompt,
             finder = finder,
             sorter = require'telescope.config'.values.generic_sorter{},
             previewer = previewer,

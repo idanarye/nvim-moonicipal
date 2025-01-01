@@ -84,12 +84,14 @@ end
 ---@param opts MoonicipalSelectOptions
 return function(options, opts)
     local new_opts = {
-        prompt = opts.prompt,
         fzf_opts = {
             ['--with-nth'] = '2..',
             ['--delimiter'] = '\t',
         },
     }
+    if opts.prompt then
+        new_opts.prompt = opts.prompt .. '> '
+    end
 
     local format_item = util.transformer_as_function(opts.format)
     local register, fetch = tagged_items_register_and_fetch(format_item)
