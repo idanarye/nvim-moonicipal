@@ -219,6 +219,13 @@ end
 ---@field format? MoonicipalOptionTransformer
 ---Previewer for the option in the selection UI.
 ---@field preview? fun(item: any): (string | string[])
+---If there is only one item in the list, choose it automatically.
+---
+---Note that this "choice" will not be cached, and as soon as another choice
+---enters the list the user will be prompted to choose.
+---
+---Also note that this field is ignored when invoked as the main task.
+---@field select_1? boolean
 
 ---Let the user choose from several options, and use a cached result when the
 ---task is called as a dependency.

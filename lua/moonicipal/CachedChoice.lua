@@ -32,6 +32,9 @@ function CachedChoice:select()
                 end
             end
         end
+        if self.select_1 and #self.items == 1 then
+            return self.items[1]
+        end
     end
 
     local chosen = require'moonicipal'.select(self.items, {
