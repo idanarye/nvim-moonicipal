@@ -135,6 +135,11 @@ end
 ---Default text to put in the buffer when it is
 ---first created
 ---@field default? string | string[]
+---Fail if called from a different task without setting this data cell first.
+---
+---If set to a string, use that string as the error message instead of the
+---default generated template.
+---@field fail_if_empty? boolean | string
 
 ---Create a data cell - a buffer where the user can put data for other tasks to
 ---use.
@@ -176,6 +181,12 @@ function MoonicipalTask:cached_data_cell(opts)
         if existing_buf_nr then
             local lines = vim.api.nvim_buf_get_lines(existing_buf_nr, 0, -1, true)
             return table.concat(lines, '\n')
+        elseif opts.fail_if_empty then
+            if type(opts.fail_if_empty) == 'string' then
+                util.abort(opts.fail_if_empty)
+            else
+                util.abort(('Missing data-cell - please run `:MC %s` to set it'):format(self.task_def.name))
+            end
         else
             return
         end

@@ -498,12 +498,16 @@ MoonicipalTask:cached_buf_in_tab({dlg}, {...})
 MoonicipalCachedDataCellOptions                *MoonicipalCachedDataCellOptions*
 
     Fields: ~
-        {win?}       (function|string)  Run to create a window for the data cell buffer.
-                                        Defaults to `botright new`
-        {buf_init?}  (function|string)  Run only if the data cell buffer is created
-        {buf?}       (function|string)  Run every time to configure the buffer
-        {default?}   (string|string[])  Default text to put in the buffer when it is
-                                        first created
+        {win?}            (function|string)  Run to create a window for the data cell buffer.
+                                             Defaults to `botright new`
+        {buf_init?}       (function|string)  Run only if the data cell buffer is created
+        {buf?}            (function|string)  Run every time to configure the buffer
+        {default?}        (string|string[])  Default text to put in the buffer when it is
+                                             first created
+        {fail_if_empty?}  (boolean|string)   Fail if called from a different task without setting this data cell first.
+
+                                             If set to a string, use that string as the error message instead of the
+                                             default generated template.
 
 
 MoonicipalTask:cached_data_cell({opts})        *MoonicipalTask:cached_data_cell*
