@@ -112,7 +112,7 @@ function M.transformer_as_function(transformer)
         end
     elseif vim.is_callable(transformer) then
         return transformer
-    elseif vim.tbl_islist(transformer) then
+    elseif vim.islist(transformer) then
         return function(item)
             return vim.tbl_get(item, unpack(transformer --[[@as string[] ]]))
         end

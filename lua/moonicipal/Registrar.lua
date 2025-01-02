@@ -64,7 +64,7 @@ local function as_iterator(value)
         return function()
             -- Do nothing - empty iteration
         end
-    elseif vim.tbl_islist(value) then
+    elseif vim.islist(value) then
         return ipairs(value)
     else
         local need_to_send = true
