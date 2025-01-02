@@ -187,8 +187,10 @@ function MoonicipalTask:cached_data_cell(opts)
             else
                 util.abort(('Missing data-cell - please run `:MC %s` to set it'):format(self.task_def.name))
             end
+        elseif type(opts.default) == 'table' then
+            return table.concat(opts.default, '\n')
         else
-            return
+            return opts.default
         end
     end
 
