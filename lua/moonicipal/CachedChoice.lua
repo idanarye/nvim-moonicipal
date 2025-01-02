@@ -31,6 +31,7 @@ function CachedChoice:select()
                     return option
                 end
             end
+            self.task.cache[CachedChoice] = nil
         end
         if self.select_1 and #self.items == 1 then
             return self.items[1]
