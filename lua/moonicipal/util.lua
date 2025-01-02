@@ -155,4 +155,61 @@ function M.set_buf_contents(buf_nr, content)
     vim.api.nvim_buf_set_lines(buf_nr, 0, -1, true, content)
 end
 
+---@generic T
+---@param items T[]
+---@param priority function(item: T): number?
+---@return number[]
+function M.priorities_list(items, priority)
+    local priorities = {}
+    local scores = {}
+    for i, item in ipairs(items) do
+        priorities[i] = i
+        scores[i] = priority(item)
+    end
+    table.sort(priorities, function(a, b)
+        local score_a = scores[a] or 0
+        local score_b = scores[b] or 0
+        if score_a < score_b then
+            return false
+        elseif score_b < score_a then
+            return true
+        else
+            return a < b
+        end
+    end)
+    return priorities
+end
+
+---@generic T
+---@param items T[]
+---@param indexes number[]
+---@result T[]
+function M.reordered_by(items, indexes)
+    return vim.iter(indexes):map(function(i)
+        return items[i]
+    end):totable()
+end
+
+---@generic T
+---@param items T[]
+---@param priority function(item: T): number?
+---@return T[]
+function M.prioritized(items, priority)
+    local priorities = M.priorities_list(items, priority)
+    return M.reordered_by(items, priorities)
+end
+
+---@generic T
+---@param cb_function fun(cb: fun(item: T))
+---@return T[]
+function M.resolve_cb_function(cb_function)
+    local items = {}
+    local len = 0
+    cb_function(function(item)
+        len = len + 1;
+        items[len] = item
+    end)
+    return items
+end
+
 return M

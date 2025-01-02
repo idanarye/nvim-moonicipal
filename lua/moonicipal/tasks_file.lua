@@ -99,9 +99,6 @@ function T:select_and_invoke()
     for k, v in pairs(selection_lru) do
         order[v] = k
     end
-    local task_names = vim.fn.sort(self:all_task_names(), function(a, b)
-        return (order[b] or 0) - (order[a] or 0)
-    end)
     util.defer_to_coroutine(function()
         local task_actions = require'moonicipal.settings'.task_actions
         local actions = {}
@@ -111,9 +108,12 @@ function T:select_and_invoke()
         if task_actions.edit then
             actions[task_actions.edit] = {}
         end
-        local task_name, action = require'moonicipal'.select(task_names, {
+        local task_name, action = require'moonicipal'.select(self:all_task_names(), {
             prompt = 'Choose task to run',
             actions = actions,
+            priority = function(task_name)
+                return order[task_name]
+            end,
         })
         if not task_name then
             return

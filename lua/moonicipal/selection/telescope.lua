@@ -17,25 +17,28 @@ return function(options, opts)
     local preselect_index = opts.preselect
     if vim.is_callable(options) then
         -- TODO: make this lazy
-        local items = {}
-        local len = 0
-        options(function(item)
-            len = len + 1;
-            items[len] = item
-        end)
-        finder = require'telescope.finders'.new_table {
-            results = items,
-            entry_maker = entry_maker,
-        }
-    elseif type(options) == 'table' then
+        options = util.resolve_cb_function(options)
+    end
+    if type(options) == 'table' then
         if vim.islist(options) then
+            local new_options = options
+            if opts.priority then
+                local priorities = util.priorities_list(new_options, opts.priority)
+                new_options = util.reordered_by(new_options, priorities)
+                preselect_index = vim.iter(ipairs(priorities)):find(function(_, i)
+                    return i == preselect_index
+                end)
+            end
             finder = require'telescope.finders'.new_table {
-                results = options,
+                results = new_options,
                 entry_maker = entry_maker,
             }
         else
             assert(not opts.format, 'cannot use format when the options are a table')
             local options_keys = vim.tbl_keys(options)
+            options_keys = util.prioritized(options_keys, function(key)
+                return opts.priority(key, options[key])
+            end)
             preselect_index = vim.iter(ipairs(options_keys)):find(function(_, key)
                 return preselect_index == key
             end)

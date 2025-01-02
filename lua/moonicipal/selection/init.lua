@@ -41,10 +41,16 @@ local M = {}
 ---When using the second style, the value is used to configure the specific
 ---action (see |MoonicipalSelectActionOptions|)
 ---@field actions? string[] | table<string,MoonicipalSelectActionOptions>
----Start the selection UI with the (1-based) item selected.
+---Reorder items according to their priority (higher is better)
+---
+---Note that this may prevent gradual loading of items.
+---@field priority? fun(item: any): number? | fun(key: any, item: any): number?
+---Start the selection UI with a specific item selected.
 ---
 ---If the items are provided as a table, preselect is the key of that table
----instead of a number.
+---instead of a number. Otherwise, it's the 1-based index of the item. If the
+---the items are reordered by `priority`, that index is the index the item had
+---before the prioritization.
 ---@field preselect? number | any
 M.MoonicipalSelectOptions = {}
 

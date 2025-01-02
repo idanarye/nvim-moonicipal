@@ -235,6 +235,8 @@ end
 ---@field format? MoonicipalOptionTransformer
 ---Previewer for the option in the selection UI.
 ---@field preview? fun(item: any): (string | string[])
+---Priority for the option in the selection UI.
+---@field priority? fun(item: any): number?
 ---If there is only one item in the list, choose it automatically.
 ---
 ---Note that this "choice" will not be cached, and as soon as another choice

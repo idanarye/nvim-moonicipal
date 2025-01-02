@@ -48,6 +48,7 @@ function CachedChoice:select()
     local chosen = require'moonicipal'.select(self.items, {
         format = self.format,
         preview = self.preview,
+        priority = self.priority,
         preselect = preselect,
     })
     self.task.cache[CachedChoice] = key_fn(chosen)

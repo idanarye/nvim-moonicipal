@@ -102,6 +102,12 @@ return function(options, opts)
     local format_item = util.transformer_as_function(opts.format)
     local register, fetch = tagged_items_register_and_fetch(format_item)
 
+    if opts.priority and vim.is_callable(options) then
+        --TODO: if it ever becomes possible, keep new_options a function and
+        --set the priorities lazily.
+        options = util.resolve_cb_function(options)
+    end
+
     local new_options
     local preselect_index = opts.preselect
     if vim.is_callable(options) then
@@ -116,9 +122,25 @@ return function(options, opts)
     elseif type(options) == 'table' then
         if vim.islist(options) then
             new_options = vim.tbl_map(register, options)
+            if opts.priority then
+                local priorities = util.priorities_list(options, opts.priority)
+                new_options = util.reordered_by(new_options, priorities)
+                if preselect_index then
+                    preselect_index = vim.iter(ipairs(priorities)):find(function(_, i)
+                        return i == preselect_index
+                    end)
+                end
+            end
         else
             assert(not opts.format, 'cannot use format when the options are a table')
             new_options = vim.tbl_keys(options)
+
+            if opts.priority then
+                new_options = util.prioritized(new_options, function(key)
+                    return opts.priority(key, options[key])
+                end)
+            end
+
             if preselect_index ~= nil then
                 preselect_index = vim.iter(ipairs(new_options)):find(function(_, key)
                     return preselect_index == key

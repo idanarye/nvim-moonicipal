@@ -16,20 +16,16 @@ return function(options, opts)
 
     local new_options
     if vim.is_callable(options) then
-        new_options = {}
-        local new_options_len = 0
-        util.resume_with(function(resumer)
-            util.defer_to_coroutine(function()
-                options(function(option)
-                    new_options_len = new_options_len + 1
-                    new_options[new_options_len] = option
-                end)
-                resumer()
-            end)
-        end)
+        new_options = util.resolve_cb_function(options)
     elseif type(options) == 'table' and not vim.islist(options) then
+        new_options = vim.tbl_keys(options)
+        if opts.priority then
+            new_options = util.prioritized(new_options, function(key)
+                return opts.priority(key, options[key])
+            end)
+        end
         local choice = util.resume_with(function(resumer)
-            vim.ui.select(vim.tbl_keys(options), new_opts, resumer)
+            vim.ui.select(new_options, new_opts, resumer)
         end)
         if opts.multi then
             return {options[choice]}
@@ -38,6 +34,9 @@ return function(options, opts)
         end
     else
         new_options = options
+    end
+    if opts.priority then
+        new_options = util.prioritized(new_options, opts.priority)
     end
 
     local result = util.resume_with(function(resumer)
