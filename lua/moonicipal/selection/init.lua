@@ -40,7 +40,12 @@ local M = {}
 ---```
 ---When using the second style, the value is used to configure the specific
 ---action (see |MoonicipalSelectActionOptions|)
----@field actions? (string[] | {[string]: MoonicipalSelectActionOptions})
+---@field actions? string[] | table<string,MoonicipalSelectActionOptions>
+---Start the selection UI with the (1-based) item selected.
+---
+---If the items are provided as a table, preselect is the key of that table
+---instead of a number.
+---@field preselect? number | any
 M.MoonicipalSelectOptions = {}
 
 ---@class MoonicipalSelectActionOptions

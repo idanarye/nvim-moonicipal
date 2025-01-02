@@ -14,6 +14,7 @@ return function(options, opts)
     end
 
     local finder
+    local preselect_index = opts.preselect
     if vim.is_callable(options) then
         -- TODO: make this lazy
         local items = {}
@@ -34,8 +35,12 @@ return function(options, opts)
             }
         else
             assert(not opts.format, 'cannot use format when the options are a table')
+            local options_keys = vim.tbl_keys(options)
+            preselect_index = vim.iter(ipairs(options_keys)):find(function(_, key)
+                return preselect_index == key
+            end)
             finder = require'telescope.finders'.new_table {
-                results = vim.tbl_keys(options),
+                results = options_keys,
                 entry_maker = function(key)
                     return {
                         value = options[key],
@@ -84,6 +89,7 @@ return function(options, opts)
             finder = finder,
             sorter = require'telescope.config'.values.generic_sorter{},
             previewer = previewer,
+            default_selection_index = preselect_index,
             attach_mappings = function(_, map_action)
                 local function gen_action(return_marker, action_opts)
                     action_opts = vim.tbl_extend('keep', action_opts, {multi = opts.multi})

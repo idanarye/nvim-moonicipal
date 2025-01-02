@@ -91,6 +91,9 @@ return function(options, opts)
             ['--with-nth'] = '2..',
             ['--delimiter'] = '\t',
         },
+        keymap = {
+            fzf = {},
+        }
     }
     if opts.prompt then
         new_opts.prompt = opts.prompt .. '> '
@@ -100,6 +103,7 @@ return function(options, opts)
     local register, fetch = tagged_items_register_and_fetch(format_item)
 
     local new_options
+    local preselect_index = opts.preselect
     if vim.is_callable(options) then
         function new_options(cb)
             util.defer_to_coroutine(function()
@@ -115,6 +119,11 @@ return function(options, opts)
         else
             assert(not opts.format, 'cannot use format when the options are a table')
             new_options = vim.tbl_keys(options)
+            if preselect_index ~= nil then
+                preselect_index = vim.iter(ipairs(new_options)):find(function(_, key)
+                    return preselect_index == key
+                end)
+            end
             new_opts.fzf_opts['--with-nth'] = nil
             fetch = function(key)
                 return options[key]
@@ -126,6 +135,10 @@ return function(options, opts)
         new_opts.preview = function(item)
             return util.default_transformer(opts.preview(fetch(item[1])))
         end
+    end
+
+    if preselect_index then
+        new_opts.keymap.fzf['load'] = ('pos(%d)'):format(preselect_index)
     end
 
     return util.resume_with(function(resumer)
