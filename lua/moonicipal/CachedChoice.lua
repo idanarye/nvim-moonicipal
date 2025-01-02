@@ -23,8 +23,8 @@ function CachedChoice:select()
     assert(self.key, '`cached_choice` used without setting a key')
     local key_fn = util.transformer_as_function(self.key)
 
+    local cached_key = self.task.cache[CachedChoice]
     if not self.task:is_main() then
-        local cached_key = self.task.cache[CachedChoice]
         if cached_key ~= nil then
             for _, option in ipairs(self.items) do
                 if key_fn(option) == cached_key then
@@ -38,9 +38,17 @@ function CachedChoice:select()
         end
     end
 
+    local preselect = nil
+    if cached_key ~= nil then
+        preselect = vim.iter(ipairs(self.items)):find(function(_, item)
+            return key_fn(item) == cached_key
+        end)
+    end
+
     local chosen = require'moonicipal'.select(self.items, {
         format = self.format,
         preview = self.preview,
+        preselect = preselect,
     })
     self.task.cache[CachedChoice] = key_fn(chosen)
     return chosen
