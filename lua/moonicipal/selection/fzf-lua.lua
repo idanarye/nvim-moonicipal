@@ -124,7 +124,7 @@ return function(options, opts)
 
     if opts.preview then
         new_opts.preview = function(item)
-            return opts.preview(util.default_transformer(fetch(item[1])))
+            return util.default_transformer(opts.preview(fetch(item[1])))
         end
     end
 
