@@ -509,6 +509,9 @@ MoonicipalCachedDataCellOptions                *MoonicipalCachedDataCellOptions*
                                              If set to a string, use that string as the error message instead of the
                                              default generated template.
 
+                                             Note that this is automatically turned on if `default` is not set. If this
+                                             behavior is not desired, it can manually be set to `false`.
+
 
 MoonicipalTask:cached_data_cell({opts})        *MoonicipalTask:cached_data_cell*
     Create a data cell - a buffer where the user can put data for other tasks to

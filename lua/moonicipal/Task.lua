@@ -139,6 +139,9 @@ end
 ---
 ---If set to a string, use that string as the error message instead of the
 ---default generated template.
+---
+---Note that this is automatically turned on if `default` is not set. If this
+---behavior is not desired, it can manually be set to `false`.
 ---@field fail_if_empty? boolean | string
 
 ---Create a data cell - a buffer where the user can put data for other tasks to
@@ -181,7 +184,7 @@ function MoonicipalTask:cached_data_cell(opts)
         if existing_buf_nr then
             local lines = vim.api.nvim_buf_get_lines(existing_buf_nr, 0, -1, true)
             return table.concat(lines, '\n')
-        elseif opts.fail_if_empty then
+        elseif opts.fail_if_empty or (opts.fail_if_empty == nil and not opts.default) then
             if type(opts.fail_if_empty) == 'string' then
                 util.abort(opts.fail_if_empty)
             else
