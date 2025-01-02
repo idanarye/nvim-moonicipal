@@ -125,9 +125,11 @@ function T:select_and_invoke()
                 vim.notify('Cannot add an empty action')
                 return
             end
+            util.fix_echo()
             M.open_for_edit('edit', M.get_file_name(), task_name)
             return
         elseif action == task_actions.edit then
+            util.fix_echo()
             M.open_for_edit('edit', M.get_file_name(), task_name)
             return
         end
