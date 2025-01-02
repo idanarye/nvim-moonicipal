@@ -46,6 +46,12 @@ require'moonicipal'.setup {
     -- default to the less powerful `vim.ui.select()`.
     selection = 'moonicipal.selection.fzf-lua',
     selection = 'moonicipal.selection.telescope',
+
+    -- Default values - you may change them
+    task_actions = {
+        add = '<M-a>',
+        edit = '<M-e>',
+    },
 }
 ```
 
@@ -64,6 +70,7 @@ function T:build()
     |
 end
 ```
+Alternatively, if you set fzf-lua or Telescope as your selection UI, run `:MC`, type "build" in the query line, and hit `<M-a>`.
 
 Where `|` is the location of the cursor in insert mode. Write your task - for example, let's use `vim.cmd` to run Vim's `:make` command:
 

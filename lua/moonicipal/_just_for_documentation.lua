@@ -9,6 +9,12 @@
 ---        -- default to the less powerful `vim.ui.select()`.
 ---        selection = 'moonicipal.selection.fzf-lua',
 ---        selection = 'moonicipal.selection.telescope',
+---
+---        -- Default values - you may change them
+---        task_actions = {
+---            add = '<M-a>',
+---            edit = '<M-e>',
+---        },
 ---    }
 ---<
 ---`file_prefix` is optional - if left unset, Moonicipal will set it using the
