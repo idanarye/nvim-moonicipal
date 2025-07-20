@@ -116,14 +116,6 @@ function MoonicipalTask:cached_buf_in_tab(dlg, ...)
     return unpack(result)
 end
 
-local function run_fn_or_cmd(fn_or_cmd)
-    if vim.is_callable(fn_or_cmd) then
-        fn_or_cmd()
-    else
-        vim.cmd(fn_or_cmd)
-    end
-end
-
 ---@class MoonicipalCachedDataCellOptions
 ---Run to create a window for the data cell buffer.
 ---Defaults to `botright new`
@@ -208,24 +200,20 @@ function MoonicipalTask:cached_data_cell(opts)
         if open_in_win then
             vim.fn.win_gotoid(open_in_win)
         else
-            run_fn_or_cmd(opts.win or 'botright new')
+            util.run_fn_or_cmd(opts.win or 'botright new')
             vim.cmd.buffer(cached_buffer_name)
         end
     else
-        run_fn_or_cmd(opts.win or 'botright new')
+        util.run_fn_or_cmd(opts.win or 'botright new')
         util.fake_scratch_buffer(cached_buffer_name)
         vim.o.bufhidden = 'hide'
         if opts.default then
             util.set_buf_contents(0, opts.default)
         end
-        if opts.buf_init then
-            run_fn_or_cmd(opts.buf_init)
-        end
+        util.run_fn_or_cmd(opts.buf_init)
     end
 
-    if opts.buf then
-        run_fn_or_cmd(opts.buf)
-    end
+    util.run_fn_or_cmd(opts.buf)
 end
 
 ---@class MoonicipalCachedChoiceConfiguration

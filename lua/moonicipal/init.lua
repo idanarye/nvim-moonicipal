@@ -223,6 +223,14 @@ function M.input(opts)
     end)
 end
 
+---Create a buffer, wait until the user closes that buffer, and return the
+---content of that buffer (after the user had a chance to edit it)
+---@param opts MoonicipalInputBufferOptions
+---@return string
+function M.input_buffer(opts)
+    return require'moonicipal.input_buffer'.input_buffer(opts or {})
+end
+
 ---Use a selection UI (configured by the `selection` field of
 ---|MoonicipalSettings|, defaults to |vim.ui.select()|) from a Lua coroutine,
 ---returning to the coroutine after the user selected an option.

@@ -212,4 +212,15 @@ function M.resolve_cb_function(cb_function)
     return items
 end
 
+---@param fn_or_cmd? fun() | string
+function M.run_fn_or_cmd(fn_or_cmd)
+    if fn_or_cmd == nil then
+        -- Do nothing
+    elseif vim.is_callable(fn_or_cmd) then
+        fn_or_cmd()
+    else
+        vim.cmd(fn_or_cmd)
+    end
+end
+
 return M
