@@ -206,12 +206,13 @@ function MoonicipalTask:cached_data_cell(opts)
     else
         util.run_fn_or_cmd(opts.win or 'botright new')
         util.fake_scratch_buffer(cached_buffer_name)
-        vim.o.bufhidden = 'hide'
         if opts.default then
             util.set_buf_contents(0, opts.default)
         end
         util.run_fn_or_cmd(opts.buf_init)
     end
+    vim.o.bufhidden = 'hide'
+    vim.o.buflisted = false
 
     util.run_fn_or_cmd(opts.buf)
 end
