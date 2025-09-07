@@ -43,6 +43,16 @@ function CachedChoice:select()
         preselect = vim.iter(ipairs(self.items)):find(function(_, item)
             return key_fn(item) == cached_key
         end)
+    elseif self.preselect_when_empty then
+        if vim.is_callable(self.preselect_when_empty) then
+            preselect = vim.iter(ipairs(self.items)):find(function(_, item)
+                return self.preselect_when_empty(item)
+            end)
+        else
+            preselect = vim.iter(ipairs(self.items)):find(function(_, item)
+                return key_fn(item) == self.preselect_when_empty
+            end)
+        end
     end
 
     local chosen = require'moonicipal'.select(self.items, {

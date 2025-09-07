@@ -233,6 +233,10 @@ end
 ---
 ---Also note that this field is ignored when invoked as the main task.
 ---@field select_1? boolean
+---When there is no cached selection, place the cursor on that option. Should
+---be either a string (for the key of the selection) or a predicate that
+---accepts the selectable items.
+---@field preselect_when_empty? string | fun(item: any): bool
 
 ---Let the user choose from several options, and use a cached result when the
 ---task is called as a dependency.
