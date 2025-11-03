@@ -133,8 +133,7 @@ local MoonicipalImportOptions
 ---    local L, cfg = moonicipal.import(require'my_lib')
 ---
 ---    cfg.main_file = 'main.py'
----@generic L : MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table
----@generic C
+---@generic L : MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | table, C
 ---@param lib_gen_function fun(): L, C
 ---@param opts? MoonicipalImportOptions Options for the import itself
 ---@return L, C
@@ -179,8 +178,7 @@ end
 ---
 ---    `moonicipal.merge_libs(L1, moonicipal.merge_libs(L2, L3))`
 ---
----@generic L1 : table
----@generic L2 : table
+---@generic L1 : table, L2 : table
 ---@param lib1 MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | L1
 ---@param lib2 MoonicipalRegistrar | fun(opts: MoonicipalRegistrarDecoration) | MoonicipalTask | L2
 ---@return L1 | L2

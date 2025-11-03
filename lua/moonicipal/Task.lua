@@ -45,8 +45,7 @@ end
 ---        local dependency_result = T:dependency()
 ---        print('You have selected', vim.inspect(dependency_result))
 ---    end
----@generic T
----@generic P
+---@generic T, P
 ---@param dlg `fun(...: P): T`
 ---@param ... P
 ---@return T
@@ -85,8 +84,7 @@ end
 ---        local log_buffer = T:log_buffer()
 ---        log_buffer(moonicipal.input())
 ---    end
----@generic T
----@generic P
+---@generic T, P
 ---@param dlg `fun(...: P): T`
 ---@param ... P
 ---@return T
